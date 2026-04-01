@@ -2,61 +2,61 @@
 
 AG_HOME="/c/Users/AshokKumar/Desktop/ag-local"
 
-cdd(){
+agcdd(){
     cd "$AG_HOME"
 }
 
-uldb(){
+aguldb(){
    cd "$AG_HOME/uldb"
 }
 
-unity(){
+agunity(){
     cd "$AG_HOME/uldb/ngx-unity"
 }
 
-mtp(){
+agmtp(){
     cd "$AG_HOME/uldb/ngx-mtp"
 }
 
-mockapi(){
+agmockapi(){
     cd "$AG_HOME/tools/mock-api" || return
 }
 
-proxy(){
+agproxy(){
     cd "$AG_HOME/tools/proxy" || return
 }
 
-startmock(){
-    mockapi || return
+agstartmock(){
+    agmockapi || return
     npm start
 }
 
-startproxy(){
-    proxy || return
+agstartproxy(){
+    agproxy || return
     node server.js
 }
 
-buildunity() {
-    unity || return
+agbuildunity() {
+    agunity || return
     node --max_old_space_size=8192 ./node_modules/@angular/cli/bin/ng build --watch
 }
 
-serveunity() {
-    unity || return
+agserveunity() {
+    agunity || return
     npm run static-server
 }
 
-buildmtp() {
-    mtp || return
+agbuildmtp() {
+    agmtp || return
     node --max_old_space_size=8192 ./node_modules/@angular/cli/bin/ng build --watch
 }
 
-servemtp() {
-    mtp || return
+agservemtp() {
+    agmtp || return
     npm run static-server
 }
 
-buildprod() {
+agbuildprod() {
     # move to respective folder either ngx-mtp or ngx-unity and run
     node --max_old_space_size=8192 ./node_modules/@angular/cli/bin/ng build --configuration production
 }

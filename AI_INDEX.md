@@ -13,7 +13,7 @@ Local development replaces the backend with a Node.js mock API server.
 
 # Repository Structure
 
-unity-local/
+ag-local/
   tools/
     node/              Portable Node runtime
     mock-api/          Mock backend APIs
