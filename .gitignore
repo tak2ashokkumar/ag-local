@@ -1,0 +1,34 @@
+# Logs
+*.log
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+
+# node libraries & installs
+tools/node/
+node_modules/
+
+# Sensitive Information
+tools/mock-api/customer/managed/gcp/accounts.json
+
+# Build output
+dist/
+uldb/webpack-stats-mtp.json
+uldb/webpack-stats.json
+build/
+
+#code coverages
+coverage/
+
+# Environment
+.env
+.env.local
+
+# Temporary
+tmp/
+temp/

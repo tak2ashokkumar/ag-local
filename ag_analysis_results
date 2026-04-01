@@ -1,0 +1,40 @@
+# Application Setup Analysis
+
+Based on my analysis of the directory structure, configuration files, and provided bash scripts, here is an overview of the application setup, focusing specifically on `ngx-unity`.
+
+## Workspace Overview
+The workspace `ag-local` serves as an umbrella for multiple interconnected services, primarily designed to be run concurrently in development:
+1. **`ngx-unity`**: The primary angular frontend application (located in `uldb/ngx-unity`).
+2. **`ngx-mtp`**: Another frontend application (located in `uldb/ngx-mtp`).
+3. **`tools/proxy`**: A Node.js proxy server used to route requests from the frontend to backend services or mock APIs.
+4. **`tools/mock-api`**: A mock server used during development when real backend services are unavailable.
+
+The file `dev.sh` provides convenient terminal aliases to quickly start these processes (e.g., `buildunity`, `serveunity`, `startproxy`, `startmock`).
+
+## Development Server Data Flow
+- `buildunity`: Runs `ng build --watch` which incrementally builds the `ngx-unity` Angular app into the `dist/` folder. It uses `@angular-builders/custom-webpack` customized through `extra-webpack-dev.config.js` to output `webpack-stats.json` for external integrations (often used when a Django backend or similar serves the index.html).
+- `serveunity`: Instead of utilizing the standard `ng serve`, this repository serves the statically built folder (`dist/`) using a custom Node.js script `static-server.js` on port `8061`.
+- `startproxy`: The proxy server likely sits in front of the static server and handles cross-origin routing or merging endpoints between `ngx-unity`, `ngx-mtp` and backend services.
+
+## Application Code (`ngx-unity`)
+`ngx-unity` is a mature, complex Angular 12 application (`@angular/core": "~12.2.0"`). 
+
+### Main Dependencies
+It's built with dashboard / data-viz components in mind, extensively relying on:
+- **UI Frameworks**: Bootstrap 4, CoreUI, `@ng-bootstrap`
+- **Charting & Visualization**: Chart.js (`ng2-charts`), ECharts (`echarts-for-angular`), D3 (`d3`, `d3-force`), Vis Network (`vis-network`)
+- **Code/Terminal Emulators**: Xterm (`xterm`, `xterm-addon-fit`), CodeMirror (`codemirror`)
+- **Advanced UI Inputs**: `drawflow`, `@angular-slider/ngx-slider`, `ngx-drag-drop`
+
+### Domain Modules
+The `src/app` architecture breaks down into specific feature modules indicating varying system capabilities:
+- **Core modules**: `app-core`, `app-main`, `shared`
+- **Dashboard & Landing**: `app-dashboard`, `app-home`, `app-welcome-page`
+- **Feature domains**:
+    - `united-cloud`: Likely managing cloud resources.
+    - `unity-cost-analysis`: Financial or resource reporting.
+    - `unity-chatbot`: Integrated assistant.
+    - `unity-reports`, `unity-services`, `unity-support`, `unity-setup`
+    - `app-termial-view`: In-browser terminal access.
+
+Overall, the setup is well-structured for a large enterprise dashboard application, utilizing a decoupled build-and-serve pattern. I have complete clarity on the repository's fundamental structure and its build tools.

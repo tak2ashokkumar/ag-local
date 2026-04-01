@@ -1,0 +1,29 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <title>Ng12Unity</title>
+  <base href="/">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="icon" type="image/x-icon" href="favicon.ico">
+</head>
+
+<body>
+  <!-- FOUC prevention: apply persisted theme class before Angular renders -->
+  <script>
+    (function () {
+      try {
+        var raw = localStorage.getItem('unity-theme');
+        var theme = raw ? JSON.parse(raw) : 'light';
+        if (typeof theme !== 'string') { theme = 'light'; }
+        document.body.classList.add('theme-' + theme);
+      } catch (e) {
+        document.body.classList.add('theme-light');
+      }
+    })();
+  </script>
+  <app-root></app-root>
+</body>
+
+</html>

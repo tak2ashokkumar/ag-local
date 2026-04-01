@@ -1,0 +1,36 @@
+<header class="app-header navbar">
+  <ng-template [ngIf]="mobileSidebarToggler != false">
+    <button class="navbar-toggler d-lg-none" type="button" appSidebarToggler>
+      <span class="navbar-toggler-icon"></span>
+    </button>
+  </ng-template>
+  <a class="navbar-brand px-1" (click)="goTo()" accessControl moduleName="Dashboard" accessType="View Dashboard"
+    elementType="div">
+    <ng-template [ngIf]="navbarBrandImg">
+      <img *ngIf="navbarBrand" [appHtmlAttr]="navbarBrand" [ngClass]="'navbar-brand'">
+      <img *ngIf="navbarBrandFull" [appHtmlAttr]="navbarBrandFull" [ngClass]="'navbar-brand-full'">
+      <img *ngIf="navbarBrandMinimized" [appHtmlAttr]="navbarBrandMinimized" [ngClass]="'navbar-brand-minimized'">
+    </ng-template>
+    <ng-template [ngIf]="!navbarBrandImg">
+      <div class="navbar-brand-full">{{navbarBrandText.text}}</div>
+      <div class="navbar-brand-minimized">{{navbarBrandText.icon}}</div>
+    </ng-template>
+  </a>
+  <ng-content></ng-content>
+  
+  <!-- Theme Popin: hover at header top-center to reveal -->
+  <div class="theme-popin" *ngIf="themeSvc.allowSwitch">
+    <div class="theme-popin__panel">
+      <span class="theme-popin__label"><i class="fas fa-palette"></i> Theme</span>
+      <button *ngFor="let t of themeSvc.availableThemes"
+              type="button"
+              class="theme-popin__btn"
+              [class.theme-popin__btn--active]="themeSvc.currentTheme === t"
+              (click)="themeSvc.setTheme(t)">
+        <i class="fas" [class.fa-sun]="t === 'light'" [class.fa-moon]="t === 'dark'"></i>
+        {{ t | titlecase }}
+        <i *ngIf="themeSvc.currentTheme === t" class="fas fa-check theme-popin__check"></i>
+      </button>
+    </div>
+  </div>
+</header>
