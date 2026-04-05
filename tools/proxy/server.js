@@ -18,7 +18,7 @@ const mockProxy = createProxyMiddleware({
 
 /* UNITY UI PROXY */
 const unityProxy = createProxyMiddleware({
-  target: "http://localhost:8090",
+  target: "http://localhost:8060",
   changeOrigin: true
 });
 

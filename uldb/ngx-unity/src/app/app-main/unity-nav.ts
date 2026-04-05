@@ -621,6 +621,41 @@ const UNITY_SERVICES_NAV_DATA = (svc: AppLevelService, orgName: string, isTenant
     return navItems.children && navItems.children.length ? navItems : null;
 }
 
+const UNITY_AI_LIFECYCLE_NAV_ITEMS = () => {
+    const navItems: UnityNavData[] = [
+        {
+            name: 'GPU Orchestration',
+            url: '/unity-ai-lifecycle/gpu-orchestration',
+            variant: 'branched',
+        },
+        {
+            name: 'Workload Management',
+            url: '/unity-ai-lifecycle/workload-management',
+            variant: 'branched',
+        },
+        {
+            name: 'Storage',
+            url: '/unity-ai-lifecycle/storage',
+            variant: 'branched',
+        },
+        {
+            name: 'Preconfigured AI Stack',
+            url: '/unity-ai-lifecycle/preconfigured-ai-stack',
+            variant: 'branched',
+        },
+    ]
+    return navItems;
+}
+const UNITY_AI_LIFECYCLE_NAV_DATA = () => {
+    const navItems: UnityNavData = {
+        name: 'AI Lifecycle Management',
+        url: '/unity-ai-lifecycle',
+        icon: 'fas fa-microchip',
+        children: UNITY_AI_LIFECYCLE_NAV_ITEMS(),
+    }
+    return navItems.children && navItems.children.length ? navItems : null;
+}
+
 const UNITED_CLOUD_NAV_ITEMS = (svc: AppLevelService, orgName: string) => {
     let publicCloudMenuName = orgName ? `Public Cloud \u2605` : 'Public Cloud';
     let menuName = orgName ? `UnitedConnect®` : 'UnityConnect';
@@ -851,8 +886,11 @@ export const GET_UNITY_NAV_DATA = (svc: AppLevelService, userSvc: UserInfoServic
         UNITY_SUPPORT_NAV_DATA(svc, selfBrandedOrgName),
         UNITY_SETUP_NAV_DATA(svc, selfBrandedOrgName),
     ];
+    if (selfBrandedOrgName) {
+        nav.splice(5, 0, UNITY_AI_LIFECYCLE_NAV_DATA());
+    }
     if (isTenantOrg) {
-        nav.splice(5, 0, UNITY_AI_AGENTS_NAV_DATA(svc, selfBrandedOrgName));
+        nav.splice(selfBrandedOrgName ? 6 : 5, 0, UNITY_AI_AGENTS_NAV_DATA(svc, selfBrandedOrgName));
     }
     return nav.filter(n => n);
 }
