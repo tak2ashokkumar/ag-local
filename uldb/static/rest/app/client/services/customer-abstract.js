@@ -270,9 +270,9 @@ app.factory('AbstractControllerFactory2', [
                 var resource = new resourceClass({ id: objId });
                 resource.$get().then(function (response) {
                     $scope.obj = JSON.parse(JSON.stringify(response));
+                    var modalInstance = $uibModal.open(modal);
+                    modalInstance.result.then();
                 });
-                var modalInstance = $uibModal.open(modal);
-                modalInstance.result.then();
             };
 
             var edit = function (selection, idx) {
@@ -283,9 +283,9 @@ app.factory('AbstractControllerFactory2', [
                 // todo: do we need to .get() here?
                 $http.get($scope.selection.selected.url).then(function (response) {
                     $scope.obj = JSON.parse(JSON.stringify(response.data));
+                    var modalInstance = $uibModal.open(modal);
+                    modalInstance.result.then();
                 });
-                var modalInstance = $uibModal.open(modal);
-                modalInstance.result.then();
             };
 
 

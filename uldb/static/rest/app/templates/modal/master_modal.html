@@ -39,7 +39,7 @@
 
                             <select ng-if="col.inputMethod.type === 'choices'" class="form-control"
                                 ng-model="obj[col.name]"
-                                ng-init="obj[col.name] ? '' : obj[col.name] = col.inputMethod.default"
+                                ng-init="(obj[col.name] !== undefined && obj[col.name] !== null) ? '' : obj[col.name] = col.inputMethod.default"
                                 force-null="col.nullify" name="col.description" ng-required="col.required"
                                 ng-disabled="col.disabled"
                                 ng-options="choice for choice in col.inputMethod.choices"></select>

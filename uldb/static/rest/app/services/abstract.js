@@ -500,10 +500,9 @@ app.factory('AbstractControllerFactory2', [
                 var resource = new resourceClass({ id: objId });
                 resource.$get().then(function (response) {
                     $scope.obj = JSON.parse(JSON.stringify(response));
+                    var modalInstance = $uibModal.open(modal);
+                    modalInstance.result.then();
                 });
-                var modalInstance = $uibModal.open(modal);
-
-                modalInstance.result.then();
             };
 
             var edit = function (selection, idx) {
@@ -515,10 +514,10 @@ app.factory('AbstractControllerFactory2', [
                 $http.get($scope.selection.selected.url).then(function (response) {
                     $scope.obj = JSON.parse(JSON.stringify(response.data));
                     // console.log('$scope.obj : ', ($scope.obj));
+                    var modalInstance = $uibModal.open(modal);
+                    // console.log("modal instansce result :", modalInstance.result);
+                    modalInstance.result.then();
                 });
-                var modalInstance = $uibModal.open(modal);
-                // console.log("modal instansce result :", modalInstance.result);
-                modalInstance.result.then();
             };
 
 
@@ -734,9 +733,9 @@ app.factory('AbstractControllerFactory3', [
                 handler.original = selection;
                 handler.qq = $http.get(selection.url).then(function (response) {
                     handler.obj = JSON.parse(JSON.stringify(response.data));
+                    var modalInstance = $uibModal.open(modal);
+                    modalInstance.result.then();
                 });
-                var modalInstance = $uibModal.open(modal);
-                modalInstance.result.then();
             };
 
             var remove = function (selection, idx) {
@@ -823,9 +822,9 @@ app.factory('AbstractDetailControllerFactory3', [
                 handler.original = selection;
                 handler.qq = $http.get(selection.url).then(function (response) {
                     handler.obj = JSON.parse(JSON.stringify(response.data));
+                    var modalInstance = $uibModal.open(modal);
+                    modalInstance.result.then();
                 });
-                var modalInstance = $uibModal.open(modal);
-                modalInstance.result.then();
             };
 
             return {

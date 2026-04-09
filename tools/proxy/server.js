@@ -24,7 +24,7 @@ const unityProxy = createProxyMiddleware({
 
 /* ADMIN PORTAL PROXY (Angular 1.x) */
 const adminProxy = createProxyMiddleware({
-  target: "http://localhost:8095",
+  target: "http://localhost:8065",
   changeOrigin: true
 });
 

@@ -3,7 +3,7 @@ const path = require('path');
 const fs = require('fs');
 
 const app = express();
-const PORT = 8095;
+const PORT = 8065;
 
 const STATIC_ROOT = path.resolve(__dirname, '../../uldb/static');
 const APP_ROOT = path.join(STATIC_ROOT, 'rest/app');
@@ -42,7 +42,7 @@ app.get('/api/scripts', (req, res) => {
 
 // 4. Endpoint to get menu structure
 app.get('/api/menu', (req, res) => {
-    res.sendFile(path.join(__dirname, 'menu.json'));
+  res.sendFile(path.join(__dirname, 'menu.json'));
 });
 
 // 4. Serve the launcher shell
@@ -52,7 +52,7 @@ app.get('/admin', (req, res) => {
 
 // 5. Catch-all for SPA routing (admin app uses ngRoute/ui-router)
 app.get('/admin/*', (req, res) => {
-    res.sendFile(path.join(__dirname, 'launcher.html'));
+  res.sendFile(path.join(__dirname, 'launcher.html'));
 });
 
 app.listen(PORT, '0.0.0.0', () => {
