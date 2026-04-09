@@ -60,3 +60,16 @@ agbuildprod() {
     # move to respective folder either ngx-mtp or ngx-unity and run
     node --max_old_space_size=8192 ./node_modules/@angular/cli/bin/ng build --configuration production
 }
+
+
+
+# --- ADMIN PORTAL (Angular 1.x) ---
+
+agadmin() {
+    cd "$AG_HOME/tools/admin-server" || return
+}
+
+agserveadmin() {
+    agadmin || return
+    node server.js
+}
