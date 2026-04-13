@@ -1,8 +1,9 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { NavigationEnd, Router } from '@angular/router';
 import { Subscription } from 'rxjs';
-import { UnityModules, UnityPermissionSet } from 'src/app/app.component';
 import { TabData } from 'src/app/shared/tabdata';
+import { UnityModules } from 'src/app/shared/unity-rbac-permissions/unity-modules';
+import { PermissionService } from 'src/app/shared/unity-rbac-permissions/unity-rbac-permission.service';
 
 @Component({
   selector: 'service-catalog',
@@ -14,7 +15,8 @@ export class ServiceCatalogComponent implements OnInit, OnDestroy {
   tabItems: TabData[] = tabData;
   subscr: Subscription;
 
-  constructor(private router: Router) {
+  constructor(private router: Router,
+    private permissionService: PermissionService) {
     this.subscr = this.router.events.subscribe(event => {
       if (event instanceof NavigationEnd) {
         if (event.url === '/services/service-catalog') {
@@ -33,7 +35,7 @@ export class ServiceCatalogComponent implements OnInit, OnDestroy {
 
   setTabItems() {
     let tabItems: TabData[] = [];
-    let modulePermSet = new UnityPermissionSet(UnityModules.SERVICE_CATALOGUE);
+    let modulePermSet = this.permissionService.getPermissionSet(UnityModules.SERVICE_CATALOGUE);
     tabData.forEach(td => {
       if (td.task) {
         modulePermSet.subTaskViewPermission = td.task;

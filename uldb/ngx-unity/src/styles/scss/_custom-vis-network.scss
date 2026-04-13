@@ -7,8 +7,10 @@ div.vis-network {
         // font-size: 2em;
         color: gray;
       }
+
       &:hover {
         box-shadow: none !important;
+
         &::after {
           color: lightgray;
         }
@@ -25,6 +27,7 @@ div.vis-network {
         width: 2rem !important;
         height: 2rem !important;
         border-radius: 50% !important;
+
         &.fa:before {
           position: absolute;
           top: 50%;
@@ -33,27 +36,27 @@ div.vis-network {
         }
       }
 
-      //   &.vis-zoomIn {
-      //     background-image: none !important;
-      //     &:after {
-      //       content: "+";
-      //       font-weight: bold;
-      //     }
-      //   }
-      //   &.vis-zoomOut {
-      //     background-image: none !important;
-      //     &:after {
-      //       content: "−";
-      //       font-weight: bold;
-      //     }
-      //   }
-      //   &.vis-zoomExtends {
-      //     background-image: none !important;
-      //     &:after {
-      //       content: "⤧";
-      //       font-weight: bold;
-      //     }
-      //   }
+      // &.vis-zoomIn {
+      // background-image: none !important;
+      // &:after {
+      // content: "+";
+      // font-weight: bold;
+      // }
+      // }
+      // &.vis-zoomOut {
+      // background-image: none !important;
+      // &:after {
+      // content: " ";
+      // font-weight: bold;
+      // }
+      // }
+      // &.vis-zoomExtends {
+      // background-image: none !important;
+      // &:after {
+      // content: " ";
+      // font-weight: bold;
+      // }
+      // }
     }
   }
 }

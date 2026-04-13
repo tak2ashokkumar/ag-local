@@ -8,6 +8,7 @@ import { ACTIVITY_LOG, CHECK_TASK_STATUS_BY_TASK_ID, CHECK_TASK_STATUS_BY_TASK_I
 import { Logger } from './shared/app-logger.service';
 import { DeviceMapping } from './shared/app-utility/app-utility.service';
 import { UserInfoService } from './shared/user-info.service';
+import { PermissionService } from './shared/unity-rbac-permissions/unity-rbac-permission.service';
 
 @Injectable({
   providedIn: 'root'
@@ -16,11 +17,11 @@ export class AppLevelService {
 
   constructor(private http: HttpClient,
     private logger: Logger,
-    public user: UserInfoService) { }
+    public user: UserInfoService,
+    private permissionService: PermissionService) { }
 
   getAccess(input: string) {
-    let perm = this.user.userPermissions[input];
-    return perm ? perm : null;
+    return this.permissionService.getAccess(input);
   }
 
   updateActivityLog(deviceType: string, deviceId: string) {

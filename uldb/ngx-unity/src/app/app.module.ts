@@ -1,6 +1,6 @@
 import { HashLocationStrategy, LocationStrategy } from '@angular/common';
 import { HttpClientJsonpModule } from '@angular/common/http';
-import { APP_INITIALIZER, Injector, NgModule } from '@angular/core';
+import { APP_INITIALIZER, NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { NgSelectModule } from '@ng-select/ng-select';
@@ -25,6 +25,7 @@ import { AppMainComponent } from './app-main/app-main.component';
 import { TwoFactorAuthComponent } from './app-main/two-factor-auth/two-factor-auth.component';
 import { UserProfileAddModelComponent } from './app-main/user-profile-settings/user-profile-add-model/user-profile-add-model.component';
 import { UserProfileSettingsComponent } from './app-main/user-profile-settings/user-profile-settings.component';
+import { AppNoAccessComponent } from './app-no-access/app-no-access.component';
 import { AppRoutingModule } from './app-routing.module';
 import { AppTermialViewComponent } from './app-termial-view/app-termial-view.component';
 import { AppWelcomePageComponent } from './app-welcome-page/app-welcome-page.component';
@@ -38,7 +39,6 @@ import { UserInfoService } from './shared/user-info.service';
 import { SidebarModule } from './sidebar/sidebar.module';
 import { UnityChatbotModule } from './unity-chatbot/unity-chatbot.module';
 
-export let AppInjector: Injector;
 const DEFAULT_PERFECT_SCROLLBAR_CONFIG: PerfectScrollbarConfigInterface = {
   suppressScrollX: true
 };
@@ -59,6 +59,7 @@ export function useThemeFactory(service: UnityThemeService) { return () => servi
     AppWelcomePageComponent,
     GlobalSearchComponent,
     UserProfileAddModelComponent,
+    AppNoAccessComponent,
   ],
   imports: [
     BrowserModule,
@@ -117,8 +118,4 @@ export function useThemeFactory(service: UnityThemeService) { return () => servi
   }],
   bootstrap: [AppComponent]
 })
-export class AppModule {
-  constructor(private injector: Injector) {
-    AppInjector = this.injector;
-  }
-}
+export class AppModule { }
