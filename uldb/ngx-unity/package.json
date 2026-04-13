@@ -9,7 +9,7 @@
     "test": "ng test",
     "compodoc": "npx compodoc -p tsconfig.app.json --hideGenerator",
     "serve-doc": "live-server documentation --host=0.0.0.0 --port=9090",
-    "static-server": "node static-server.js --dist=dist --port=8090 --host=0.0.0.0 --cors=true"
+    "static-server": "node static-server.js --dist=dist --port=8060 --host=0.0.0.0 --cors=true"
   },
   "private": true,
   "dependencies": {
