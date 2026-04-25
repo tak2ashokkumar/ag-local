@@ -57,7 +57,8 @@ export interface ChatHistoryData {
     feedbackSubmitted?: boolean;
     feedbackIconTooltip?: string;
     suggestedPrompt?: string;
-    actions?: { name: string, isDisabled: boolean }
+    actions?: { name: string, isDisabled: boolean };
+    showAction?: boolean;
 }
 
 export interface AssistedInsights {
@@ -82,4 +83,13 @@ export interface InsightUrl {
     url: string;
     params?: any;
     toBeskipped?: boolean;
+}
+
+export interface ChatDocuments {
+    documents: Document[];
+}
+
+export interface Document {
+    file_name: string;
+    conversation_id: string;
 }

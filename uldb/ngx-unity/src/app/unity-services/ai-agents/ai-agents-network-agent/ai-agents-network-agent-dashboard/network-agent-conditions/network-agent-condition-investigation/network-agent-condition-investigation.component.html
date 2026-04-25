@@ -1,7 +1,7 @@
 <div class="container-fluid pt-2">
     <div class="animated-fadeIn">
         <div class="row" style="height:calc(100vh - 75px)">
-            <div class="col-8 condition-detail h-100" [perfectScrollbar]="{suppressScrollX: true}">
+            <div  #leftSideContainer class="col-8 condition-detail h-100" [perfectScrollbar]="{suppressScrollX: true}">
                 <div class="card mb-2"
                     [ngClass]="{'h-100':(!initialChatResponseData?.length && !isAnyStepDataPresent)|| (initialChatResponseData?.length && !initialChatResponseData?.[0] && !isAnyStepDataPresent)}">
                     <div class="card-header border-bottom bg-white p-2 d-flex flex-column position-relative"
@@ -22,6 +22,29 @@
                                 </div>
                             </div>
                             <div class="d-flex justify-content-end w-35">
+                                <button class="action-icons mb-0 fas fa-external-link-square-alt font-sm ml-1"
+                                    tooltip="Manage in same tab"
+                                    (click)="consoleSameTab(view)"></button>
+                                <span dropdown placement="bottom right" container="body">
+                                    <!-- <button
+                                        class="action-icons action-icons-disabled mb-0 fas fa-external-link-alt font-sm ml-1"
+                                        (click)="false" container="body"></button> -->
+
+                                    <button id="button-container"
+                                        class="action-icons mb-0 fas fa-external-link-alt font-sm ml-1"
+                                        data-toggle="dropdown" aria-controls="dropdown-container" dropdownToggle
+                                        (click)="false" container="body" tooltip="Manage in New Tab"></button>
+                                    <div id="dropdown-container" class="dropdown-menu dropdown-menu-right" *dropdownMenu
+                                        aria-labelledby="button-container">
+                                        <!-- <a class="dropdown-item text-primary" (click)="webAccessNewTab(view)">Web
+                                            Access</a> -->
+                                        <!-- <a class="dropdown-item text-primary" (click)="requestWebAccess(view)">Request
+                                            Web Access </a> -->
+                                        <a class="dropdown-item" (click)="consoleNewTab(view)">
+                                            Console Access
+                                        </a>
+                                    </div>
+                                </span>
                                 <button
                                     *ngIf="!conditionDetailsViewData.ticketId && !conditionDetailsViewData.ticketUuid && conditionDetailsViewData.conditionStatus != 'Resolved'"
                                     class="btn btn-sm btn-pill btn-warning ml-2" type="button"
@@ -147,7 +170,8 @@
 
                     <div class="card-body"
                         [ngClass]="{'p-0 position-relative h-100':chatResponse?.answer?.stage!='Stage 0'}">
-                        <ng-container *ngIf="chatResponse?.answer?.stage == 'Stage 0'">
+
+                        <!-- <ng-container *ngIf="chatResponse?.answer?.stage == 'Stage 0'">
                             <div class="col mt-2 row pr-0 mb-2 align-items-center">
                                 <img [src]="analysisLogos.UnityOne.imageURL" alt="UnityOne.ai"
                                     style="height: 20px; max-width: 20px;" />
@@ -241,7 +265,7 @@
                                 <h6 class="font-500 border-bottom pb-2">Activity</h6>
                                 <ng-container *ngTemplateOutlet="activityList"></ng-container>
                             </div>
-                        </ng-container>
+                        </ng-container> -->
 
                         <div class="h-100"
                             *ngIf="((!initialChatResponseData?.length && !isAnyStepDataPresent)|| (initialChatResponseData?.length && !initialChatResponseData?.[0] && !isAnyStepDataPresent))">
@@ -257,12 +281,11 @@
                         </div>
                     </div>
                 </div>
-                <div class="mt-3"
-                    *ngIf="chatResponse?.answer?.stage?.startsWith('Stage ') && chatResponse?.answer?.stage != 'Stage 0'">
+                <div class="my-3" *ngIf="chatResponseHistoryData.length">
                     <div class="d-flex align-items-center justify-content-between">
-                        <div class="font-500 font-lg">
+                        <h1 class="font-500 font-xl mt-1">
                             Workspace
-                        </div>
+                        </h1>
                         <button class="btn btn-pill btn-warning" (click)="togglePromptTuning()">
                             Prompt Tuning
                         </button>
@@ -279,7 +302,7 @@
                                 <input type="checkbox" [checked]="selectedPrompt?.isActive"
                                     [disabled]="!selectedPrompt || selectedPrompt.isActive"
                                     (change)="onToggleActive($event)" />
-                                <span class="fw-bold ml-1">
+                                <span class="font-500 ml-1">
                                     {{ selectedPrompt?.isActive ? 'Active' : 'Inactive' }}
                                 </span>
                             </div>
@@ -322,7 +345,8 @@
                         [title]="selectedPrompt?.isDefault ? 'Default version cannot be edited' : ''"
                         (click)="onSave()">Save</button>
                 </div> -->
-                <ng-container *ngFor="let step of dynamicSteps">
+
+                <!-- <ng-container *ngFor="let step of dynamicSteps">
 
                     <naci-monitoring *ngIf="step.componentType === 'Monitoring'" [chatResponse]="step.chatResponse">
                     </naci-monitoring>
@@ -347,7 +371,21 @@
                         [chatResponse]="step.chatResponse">
                     </naci-cli-check-steps>
 
-                </ng-container>
+                </ng-container> -->
+
+                <div class="card" *ngIf="chatResponseHistoryData.length">
+                    <div class="card-body">
+                        <div #chatResponseHistory *ngFor="let chat of chatResponseHistoryData;let i = index;let last = last" class="w-100"
+                            style="max-width: 100%;">
+                            <markdown (click)="onMarkdownClick($event)" [data]="chat.workSpaceData"></markdown>
+                            <naci-zabbix-graphs [deviceData]="chat.meta?.device_data" [index]="i"
+                                *ngIf="chat.meta?.device_data?.monitoring_type && chat.meta?.device_data?.monitoring_type!= 'Network Topology'"></naci-zabbix-graphs>
+                            <naci-network-topology-steps [deviceData]="chat.meta?.device_data" [index]="i"
+                                *ngIf="chat.meta?.device_data?.monitoring_type == 'Network Topology'">></naci-network-topology-steps>
+                            <hr class="border" *ngIf="!last">
+                        </div>
+                    </div>
+                </div>
             </div>
 
 
@@ -432,3 +470,28 @@
         </div>
     </div>
 </ng-template>
+
+<ng-template #executeCommand>
+    <div class="card mb-0">
+        <div class="card-header font-500">
+            Confirm Command Execution
+            <div class="card-header-actions">
+                <a class="card-header-action btn-close" (click)="confirmExecutionModalRef.hide()">
+                    <i class="fas fa-times"></i>
+                </a>
+            </div>
+        </div>
+        <div class="card-body">
+            <div>Do you want to Execute this Command ?</div>
+            <div class="font-500 mt-2">{{command}}</div>
+        </div>
+        <div class="card-footer">
+            <button class="btn btn-sm btn-success pull-right ml-1" type="button" (click)="confirmExecuteModal()">Yes</button>
+            <button class="btn btn-sm btn-danger pull-right" (click)="confirmExecutionModalRef.hide()"
+                type="button">No</button>
+        </div>
+    </div>
+</ng-template>
+
+<naci-auth-modal></naci-auth-modal>
+<naci-floating-terminal></naci-floating-terminal>

@@ -16,6 +16,93 @@ export class NaciChatbotService {
     return this.http.post(`${environment.networkAgentHostUrl}v1/investigate/`, data);
   }
 
+  getStreamingResponse(data: any): Observable<any> {
+    return new Observable(observer => {
+      fetch(`${environment.networkAgentHostUrl}v1/investigate/chat_sse_new`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(data)
+      }).then(response => {
+        const reader = response.body.getReader();
+        const decoder = new TextDecoder();
+        let buffer = '';
+        let currentEvent = '';
+        const read = () => {
+          reader.read().then(({ done, value }) => {
+            if (done) {
+              observer.complete();
+              return;
+            }
+            buffer += decoder.decode(value, { stream: true });
+            const parts = buffer.split('\n\n');
+            buffer = parts.pop();
+            parts.forEach(part => {
+              const lines = part.split('\n');
+              let dataStr = '';
+              lines.forEach(line => {
+                if (line.startsWith('event:')) {
+                  currentEvent = line.replace('event:', '').trim();
+                } else if (line.startsWith('data:')) {
+                  dataStr += line.replace('data:', '').trim();
+                }
+              });
+              if (!dataStr) return;
+              try {
+                const parsed = JSON.parse(dataStr);
+                observer.next({ event: currentEvent, data: parsed });
+              } catch {
+                console.log('chatbot svc', dataStr)
+                observer.next({ event: currentEvent, data: dataStr });
+              }
+            });
+            read();
+          }).catch(err => observer.error(err));
+        };
+        read();
+      }).catch(err => observer.error(err));
+    });
+    // return new Observable(observer => {
+    //   fetch(`${environment.networkAgentHostUrl}v1/investigate/chat_sse_new`, {
+    //     method: 'POST',
+    //     headers: {
+    //       'Content-Type': 'application/json',
+    //     },
+    //     body: JSON.stringify(data)
+    //   }).then(response => {
+    //     const reader = response.body.getReader();
+    //     const decoder = new TextDecoder();
+    //     const read = () => {
+    //       reader.read().then(({ done, value }) => {
+    //         if (done) {
+    //           observer.complete();
+    //           return;
+    //         }
+    //         const chunk = decoder.decode(value, { stream: true });
+    //         const lines = chunk.split('\n');
+    //         let currentEvent = '';
+    //         lines.forEach(line => {
+    //           if (line.startsWith('event:')) {
+    //             currentEvent = line.replace('event:', '').trim();
+    //           } else if (line.startsWith('data:')) {
+    //             const data = line.replace('data:', '').trim();
+    //             try {
+    //               const parsed = JSON.parse(data);
+    //               observer.next({ event: currentEvent, data: parsed });
+    //             } catch {
+    //               observer.next({ event: currentEvent, data });
+    //             }
+    //           }
+    //         });
+    //         read();
+    //       }).catch(err => observer.error(err));
+    //     };
+    //     read();
+    //   }).catch(err => observer.error(err));
+    // });
+  }
+
   getSupportedLLMModelList(): Observable<SupportedLLMConfigData[]> {
     return this.http.get<SupportedLLMConfig>(`/mcp/get-supported-llm-configs/`).pipe(
       map((res: SupportedLLMConfig) => {

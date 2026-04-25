@@ -12,8 +12,8 @@ export class GreenItSubscribeComponent implements OnInit {
 
   ngOnInit(): void { }
 
-  goToDashboard() {
-    this.router.navigate(['unityview','root','dashboard']);
+  goToHome() {
+    this.router.navigate(['home']);
   }
 
 }

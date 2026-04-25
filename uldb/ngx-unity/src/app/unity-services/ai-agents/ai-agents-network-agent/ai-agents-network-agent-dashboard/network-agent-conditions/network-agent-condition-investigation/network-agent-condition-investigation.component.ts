@@ -1,9 +1,9 @@
-import { Component, ElementRef, Inject, OnDestroy, OnInit, Renderer2, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, Inject, OnDestroy, OnInit, QueryList, Renderer2, ViewChild, ViewChildren } from '@angular/core';
 import { NetworkAgentConditionDetailsViewData, NetworkAgentConditionInvestigationService, PromptResultViewData } from './network-agent-condition-investigation.service';
 import { AppSpinnerService } from 'src/app/shared/app-spinner/app-spinner.service';
 import { AppNotificationService } from 'src/app/shared/app-notification/app-notification.service';
 import { ActivatedRoute, ParamMap, Router } from '@angular/router';
-import { AppUtilityService, SERVICE_NOW_TICKET_TYPE, TICKET_MGMT_TYPE } from 'src/app/shared/app-utility/app-utility.service';
+import { AppUtilityService, DeviceMapping, SERVICE_NOW_TICKET_TYPE, TICKET_MGMT_TYPE, TICKET_TYPE } from 'src/app/shared/app-utility/app-utility.service';
 import { StorageService, StorageType } from 'src/app/shared/app-storage/storage.service';
 import { Notification } from 'src/app/shared/app-notification/notification.type';
 import { takeUntil } from 'rxjs/operators';
@@ -15,6 +15,12 @@ import { PAGE_SIZES, SearchCriteria } from 'src/app/shared/table-functionality/s
 import { DOCUMENT } from '@angular/common';
 import { NetworkAgentsChatResponseType } from './naci-chatbot/naci-chatbot.type';
 import { BsModalRef, BsModalService } from 'ngx-bootstrap/modal';
+import { SharedCreateTicketService } from 'src/app/shared/shared-create-ticket/shared-create-ticket.service';
+import { FloatingTerminalService } from 'src/app/shared/floating-terminal/floating-terminal.service';
+import { DEVICE_WEB_ACCESS_SUBJECT, SWITCH_TICKET_METADATA } from 'src/app/shared/create-ticket.const';
+import { AppLevelService } from 'src/app/app-level.service';
+import { ConsoleAccessInput } from 'src/app/shared/check-auth/check-auth.service';
+import { NaciNewTerminalService } from './naci-new-terminal/naci-new-terminal.service';
 
 @Component({
   selector: 'network-agent-condition-investigation',
@@ -22,7 +28,7 @@ import { BsModalRef, BsModalService } from 'ngx-bootstrap/modal';
   styleUrls: ['./network-agent-condition-investigation.component.scss'],
   providers: [NetworkAgentConditionInvestigationService]
 })
-export class NetworkAgentConditionInvestigationComponent implements OnInit, OnDestroy {
+export class NetworkAgentConditionInvestigationComponent implements OnInit, AfterViewInit, OnDestroy {
   private ngUnsubscribe = new Subject();
 
   conditionId: string;
@@ -41,6 +47,10 @@ export class NetworkAgentConditionInvestigationComponent implements OnInit, OnDe
   activityVerticalWizardViewData: any;
 
   chatResponse: any;
+  chatResponseHistoryData: any[] = [];
+
+  @ViewChild('leftSideContainer') leftSideContainer: ElementRef;
+  @ViewChildren('chatResponseHistory') chatResponseHistory: QueryList<ElementRef>;
 
   initialChatResponseData: any[] = [];
   isAnyStepDataPresent: boolean = false;
@@ -61,6 +71,12 @@ export class NetworkAgentConditionInvestigationComponent implements OnInit, OnDe
   confirmSaveAsModalRef: BsModalRef;
   promptName: string = '';
 
+  conversationId: string = '';
+
+  @ViewChild('executeCommand') executeCommand: ElementRef;
+  confirmExecutionModalRef: BsModalRef;
+  command: string = '';
+
   constructor(private svc: NetworkAgentConditionInvestigationService,
     @Inject(DOCUMENT) private document,
     private renderer: Renderer2,
@@ -70,7 +86,11 @@ export class NetworkAgentConditionInvestigationComponent implements OnInit, OnDe
     private router: Router,
     private utilService: AppUtilityService,
     private modalService: BsModalService,
-    public storage: StorageService) {
+    public storage: StorageService,
+    private ticketService: SharedCreateTicketService,
+    private termService: FloatingTerminalService,
+    private appService: AppLevelService,
+    private newTerminalService: NaciNewTerminalService) {
     this.route.paramMap.pipe(takeUntil(this.ngUnsubscribe)).subscribe((params: ParamMap) => {
       this.conditionId = params.get('conditionId');
       this.conditionUuid = params.get('conditionUuid');
@@ -86,7 +106,25 @@ export class NetworkAgentConditionInvestigationComponent implements OnInit, OnDe
       this.spinner.start('conditionSummarySpinner');
     }, 5);
     this.getConditionDetails();
-    this.getActivities();
+    // this.getActivities();
+  }
+
+  ngAfterViewInit() {
+    this.chatResponseHistory.changes.pipe(takeUntil(this.ngUnsubscribe)).subscribe((change) => {
+      if (this.chatResponseHistory?.length > 1) {
+        this.scrollToLastChatResponseHistory();
+      }
+    });
+  }
+
+  scrollToLastChatResponseHistory() {
+    setTimeout(() => {
+      const parent = this.leftSideContainer.nativeElement;
+      const last = this.chatResponseHistory.last?.nativeElement;
+      // added gap=150, When scrolling to the last chat history response,it will leave 150px space above it in the viewport, so some part of previous chat response history also show
+      const gap = 150;
+      parent.scrollTop += (last.getBoundingClientRect().top - parent.getBoundingClientRect().top) - gap;
+    }, 2);
   }
 
   ngOnDestroy(): void {
@@ -264,48 +302,60 @@ export class NetworkAgentConditionInvestigationComponent implements OnInit, OnDe
     }
   }
 
-  private resolveStep(res: NetworkAgentsChatResponseType) {
-    const phase = res?.answer?.phase;
-    const stageTitle = res?.answer?.stage_title;
+  // private resolveStep(res: NetworkAgentsChatResponseType) {
+  //   const phase = res?.answer?.phase;
+  //   const stageTitle = res?.answer?.stage_title;
 
-    if (phase !== 'Verify and Audit') {
-      return {
-        stageKey: phase,
-        componentType: 'Basic CLI Check'
-      }
-    }
+  //   if (phase !== 'Verify and Audit') {
+  //     return {
+  //       stageKey: phase,
+  //       componentType: 'Basic CLI Check'
+  //     }
+  //   }
 
-    return {
-      stageKey: stageTitle,
-      componentType: stageTitle
-    }
-  }
+  //   return {
+  //     stageKey: stageTitle,
+  //     componentType: stageTitle
+  //   }
+  // }
 
-  handleChatResponse(res: NetworkAgentsChatResponseType | null) {
+  handleChatResponse(res: any | null) {
     if (this.initialChatResponseData?.length == 0) {
       this.initialChatResponseData.push(res);
       this.spinner.stop('conditionSummarySpinner');
     }
-    if (res == null || res?.answer?.phase == 'General') { return; }
-    this.isAnyStepDataPresent = res?.answer?.stage ? true : this.isAnyStepDataPresent;
-    const { stageKey, componentType } = this.resolveStep(res);
-    const existingStep = this.dynamicSteps.find(
-      step => step.stageKey === stageKey
-    );
-    if (existingStep) {
-      existingStep.chatResponse = res;
-    } else {
-      this.dynamicSteps.push({
-        stageKey,
-        componentType,
-        chatResponse: res
-      });
+    // if (res == null || res?.answer?.phase == 'General') { return; }
+    if (res == null) { return; }
+    if (res?.meta?.filters_used?.conversation_id) {
+      this.conversationId = res?.meta?.filters_used?.conversation_id;
+      this.newTerminalService.setConversationId(res?.meta?.filters_used?.conversation_id);
     }
-    this.dynamicSteps = [...this.dynamicSteps];
-    this.chatResponse = res;
-    if (res?.answer?.stage == "Stage 0") {
-      this.conditionOverviewViewData = this.svc.convertToConditionOverviewData(res.answer);
+    this.isAnyStepDataPresent = res?.answer ? true : this.isAnyStepDataPresent;
+    const workSpaceData = res?.answer?.split('sectionBreak')[1];
+    if (!workSpaceData && !res?.meta?.device_data?.monitoring_type) {
+      return;
     }
+    const modifiedRes = { ...res, workSpaceData: workSpaceData };
+    this.chatResponseHistoryData.push(modifiedRes);
+
+    // const { stageKey, componentType } = this.resolveStep(res);
+    // const existingStep = this.dynamicSteps.find(
+    //   step => step.stageKey === stageKey
+    // );
+    // if (existingStep) {
+    //   existingStep.chatResponse = res;
+    // } else {
+    //   this.dynamicSteps.push({
+    //     stageKey,
+    //     componentType,
+    //     chatResponse: res
+    //   });
+    // }
+    // this.dynamicSteps = [...this.dynamicSteps];
+    // this.chatResponse = res;
+    // if (res?.answer?.stage == "Stage 0") {
+    //   this.conditionOverviewViewData = this.svc.convertToConditionOverviewData(res.answer);
+    // }
     this.spinner.stop('main');
   }
 
@@ -389,6 +439,46 @@ export class NetworkAgentConditionInvestigationComponent implements OnInit, OnDe
       this.confirmSaveAsModalRef.hide();
       this.notification.error(new Notification('Failed to Save As Version. Please try again later.'));
     })
+  }
+
+  requestWebAccess(view: any) {
+    this.ticketService.createTicket({
+      subject: DEVICE_WEB_ACCESS_SUBJECT(DeviceMapping.SWITCHES, view.name),
+      metadata: SWITCH_TICKET_METADATA(DeviceMapping.SWITCHES, view.name, view.deviceStatus, view.model, view.type, view.managementIp),
+      type: TICKET_TYPE.PROBLEM,
+      webaccess: true
+    }, DeviceMapping.SWITCHES);
+  }
+
+  webAccessNewTab(view: any) {
+    // this.appService.updateActivityLog('switches', 'sdrgg');
+    window.open('/main#/unityterminal/');
+  }
+
+  consoleNewTab(view: any) {
+    window.open(`/main#/terminal-new-tab?conversationId=${this.conversationId}`, '_blank');
+  }
+
+  consoleSameTab(view: any) {
+    this.newTerminalService.openTerminal();
+  }
+
+  onMarkdownClick(event: MouseEvent) {
+    const target = event.target as HTMLElement;
+    const codeEl = target.closest('code');
+    if (codeEl) {
+      this.command = codeEl.textContent?.trim();
+      if (this.command) {
+        this.confirmExecutionModalRef = this.modalService.show(this.executeCommand, Object.assign({}, { class: '', keyboard: true, ignoreBackdropClick: true }));
+      }
+    }
+
+  }
+
+  confirmExecuteModal() {
+    this.confirmExecutionModalRef.hide();
+    localStorage.setItem('terminal_command', this.command);
+    window.open(`/main#/terminal-new-tab?conversationId=${this.conversationId}`, '_blank');
   }
 
 }
