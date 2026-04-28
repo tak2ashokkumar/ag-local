@@ -1,11 +1,13 @@
 import { NgModule } from "@angular/core";
 import { RouterModule, Routes } from "@angular/router";
-import { AppDashboardComponent } from "./app-dashboard.component";
-import { AppPersonaDashboardComponent } from "./app-persona-dashboard/app-persona-dashboard.component";
+import { AppDashboardCollectionsCrudComponent } from "./app-dashboard-collections/app-dashboard-collections-crud/app-dashboard-collections-crud.component";
+import { AppDashboardCollectionsComponent } from "./app-dashboard-collections/app-dashboard-collections.component";
 import { AppDashboardCrudComponent } from "./app-dashboard-crud/app-dashboard-crud.component";
 import { AppDashboardListComponent } from "./app-dashboard-list/app-dashboard-list.component";
-import { AppDefaultDashboardsComponent } from "./app-default-dashboards/app-default-dashboards.component";
+import { AppDashboardComponent } from "./app-dashboard.component";
 import { DEFAULT_DASHBOARD_ROUTES } from "./app-default-dashboards/app-default-dashboards-routing.const";
+import { AppDefaultDashboardsComponent } from "./app-default-dashboards/app-default-dashboards.component";
+import { AppPersonaDashboardComponent } from "./app-persona-dashboard/app-persona-dashboard.component";
 
 const routes: Routes = [
     {
@@ -17,6 +19,35 @@ const routes: Routes = [
             }
         },
         children: [
+            {
+                path: 'collections',
+                data: {
+                    breadcrumb: {
+                        title: 'Curated Collection'
+                    }
+                },
+                component: AppDashboardCollectionsComponent,
+            },
+            {
+                path: 'collections/create',
+                component: AppDashboardCollectionsCrudComponent,
+                data: {
+                    breadcrumb: {
+                        title: 'Create Collection',
+                        stepbackCount: 1
+                    }
+                }
+            },
+            {
+                path: 'collections/:collectionUUID/update',
+                component: AppDashboardCollectionsCrudComponent,
+                data: {
+                    breadcrumb: {
+                        title: 'Edit Collection',
+                        stepbackCount: 1
+                    }
+                }
+            },
             {
                 path: 'default',
                 data: {

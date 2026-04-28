@@ -843,6 +843,14 @@ const UNITED_VIEW_NAV_DATA = (svc: PermissionService, orgName: string) => {
 const DASBOARD_NAV_ITEMS = (svc: PermissionService) => {
     let navItems: UnityNavData[] = [
         {
+            name: 'Curated Collection',
+            url: '/app-dashboard/collections',
+            icon: 'fas fa-layer-group',
+            attributes: {
+                module: UnityModules.DASHBOARD,
+            }
+        },
+        {
             name: 'Default',
             url: '/app-dashboard/default',
             icon: 'fas fa-th-large',
