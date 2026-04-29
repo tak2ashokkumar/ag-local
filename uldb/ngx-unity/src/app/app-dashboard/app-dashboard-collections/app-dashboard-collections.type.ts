@@ -1,12 +1,18 @@
 export interface CuratedCollection {
+  id?: string | number;
   uuid: string;
   name: string;
   description?: string;
-  user_roles: string[];
-  user_groups: string[];
-  dashboard_ids?: string[];
-  created_by: string;
-  updated_at: string;
+  roles?: any[];
+  groups?: any[];
+  user_roles?: any[];
+  user_groups?: any[];
+  dashboards?: any[];
+  dashboard_ids?: any[];
+  created_by?: any;
+  updated_at?: string;
+  modified_at?: string;
+  applicable_module_permissions?: any[];
   status: 'draft' | 'published';
 }
 

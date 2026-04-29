@@ -6,16 +6,15 @@
                     <div class="card-header bg-transparent d-flex justify-content-between align-items-center py-2">
                         <div class="d-flex justify-content-center align-items-center">
                             <span class="badge badge-secondary font-lg font-500">{{count}}</span>
-                            <span class="ml-1 font-lg">Curated Collection</span>
+                            <span class="ml-1 font-lg">Collections</span>
                         </div>
                         <div class="d-flex justify-content-end align-items-center">
-                            <button class="btn btn-pill btn-sm btn-warning mr-2" accessControl
-                                moduleName="Dashboard" accessType="Manage Dashboard" elementType="btn"
-                                (click)="add()">
+                            <button class="btn btn-pill btn-sm btn-warning mr-2" accessControl moduleName="Dashboard"
+                                accessType="Manage Dashboard" elementType="btn" (click)="add()">
                                 <i class="fas fa-plus"></i>&nbsp;Collection
                             </button>
                             <data-refresh-btn [page]="currentCriteria.pageNo"
-                                (refresh)="refreshData()"></data-refresh-btn>
+                                (refresh)="refreshData($event)"></data-refresh-btn>
                         </div>
                     </div>
 
@@ -33,8 +32,7 @@
                                     </div>
                                     <div class="mx-2">
                                         <select class="form-control form-control-sm status-filter"
-                                            [(ngModel)]="selectedStatusFilter"
-                                            (change)="onStatusFilterChange()">
+                                            [(ngModel)]="selectedStatusFilter" (change)="onStatusFilterChange()">
                                             <option *ngFor="let opt of statusOptions" [value]="opt.value">
                                                 {{opt.label}}
                                             </option>
@@ -106,33 +104,27 @@
                                         </div>
                                     </td>
                                     <td class="action-icons-column text-center">
-                                        <button class="action-icons mb-0 fas fa-pencil-alt font-sm ml-1"
-                                            tooltip="Edit" (click)="edit(view)" accessControl
-                                            moduleName="Dashboard" accessType="Manage Dashboard"
-                                            elementType="actionbtn"
+                                        <button class="action-icons mb-0 fas fa-pencil-alt font-sm ml-1" tooltip="Edit"
+                                            (click)="edit(view)" accessControl moduleName="Dashboard"
+                                            accessType="Manage Dashboard" elementType="actionbtn"
                                             [modulePermissions]="view.applicableModulePermissions"></button>
-                                        <button class="action-icons mb-0 fas fa-trash-alt font-sm ml-1"
-                                            tooltip="Delete" (click)="delete(view)" accessControl
-                                            moduleName="Dashboard" accessType="Manage Dashboard"
-                                            elementType="actionbtn"
+                                        <button class="action-icons mb-0 fas fa-trash-alt font-sm ml-1" tooltip="Delete"
+                                            (click)="delete(view)" accessControl moduleName="Dashboard"
+                                            accessType="Manage Dashboard" elementType="actionbtn"
                                             [modulePermissions]="view.applicableModulePermissions"></button>
                                     </td>
                                 </tr>
                             </tbody>
                         </table>
 
-                        <table-entries [pageNo]="currentCriteria.pageNo"
-                            [pageSize]="currentCriteria.pageSize"
+                        <table-entries [pageNo]="currentCriteria.pageNo" [pageSize]="currentCriteria.pageSize"
                             [totalCount]="count">
                         </table-entries>
-                        <table-pager *ngIf="viewData.length"
-                            [pageNo]="currentCriteria.pageNo"
-                            [pageSize]="currentCriteria.pageSize"
-                            [totalCount]="count"
+                        <table-pager *ngIf="viewData.length" [pageNo]="currentCriteria.pageNo"
+                            [pageSize]="currentCriteria.pageSize" [totalCount]="count"
                             (pageChange)="pageChange($event)">
                         </table-pager>
-                        <div *ngIf="!viewData.length"
-                            class="d-flex py-4 justify-content-center align-items-center">
+                        <div *ngIf="!viewData.length" class="d-flex py-4 justify-content-center align-items-center">
                             No Collections available.
                         </div>
                     </div>

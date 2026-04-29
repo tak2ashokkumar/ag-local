@@ -39,7 +39,7 @@ const routes: Routes = [
                 }
             },
             {
-                path: 'collections/:collectionUUID/update',
+                path: 'collections/:collectionId/update',
                 component: AppDashboardCollectionsCrudComponent,
                 data: {
                     breadcrumb: {

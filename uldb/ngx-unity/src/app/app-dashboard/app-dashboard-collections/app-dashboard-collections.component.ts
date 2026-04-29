@@ -97,14 +97,14 @@ export class AppDashboardCollectionsComponent implements OnInit, OnDestroy {
     this.getCollections();
   }
 
-  refreshData() {
+  refreshData(pageNo: number) {
     this.spinner.start('main');
     this.selectedStatusFilter = '';
     this.currentCriteria = {
       sortColumn: '',
       sortDirection: '',
       searchValue: '',
-      pageNo: 1,
+      pageNo: pageNo,
       pageSize: PAGE_SIZES.DEFAULT_PAGE_SIZE,
       params: [{}]
     };
