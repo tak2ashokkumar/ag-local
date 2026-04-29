@@ -16,6 +16,7 @@ import { AppCoreModule } from '../app-core/app-core.module';
 import { AppHomeModule } from '../app-home/app-home.module';
 import { SharedModule } from '../shared/shared.module';
 import { AppDashboardCollectionsCrudComponent } from './app-dashboard-collections/app-dashboard-collections-crud/app-dashboard-collections-crud.component';
+import { AppDashboardCollectionsViewComponent } from './app-dashboard-collections/app-dashboard-collections-view/app-dashboard-collections-view.component';
 import { AppDashboardCollectionsComponent } from './app-dashboard-collections/app-dashboard-collections.component';
 import { AdcPreviewComponent } from './app-dashboard-crud/adc-preview/adc-preview.component';
 import { AppDashboardCrudComponent } from './app-dashboard-crud/app-dashboard-crud.component';
@@ -78,6 +79,7 @@ export const MY_NATIVE_FORMATS = {
     UnifiedAiopsCommandCentreComponent,
     AppDashboardCollectionsComponent,
     AppDashboardCollectionsCrudComponent,
+    AppDashboardCollectionsViewComponent,
   ],
   imports: [
     AppCoreModule,

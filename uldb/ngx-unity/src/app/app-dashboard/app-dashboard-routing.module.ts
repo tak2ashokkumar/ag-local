@@ -1,6 +1,7 @@
 import { NgModule } from "@angular/core";
 import { RouterModule, Routes } from "@angular/router";
 import { AppDashboardCollectionsCrudComponent } from "./app-dashboard-collections/app-dashboard-collections-crud/app-dashboard-collections-crud.component";
+import { AppDashboardCollectionsViewComponent } from "./app-dashboard-collections/app-dashboard-collections-view/app-dashboard-collections-view.component";
 import { AppDashboardCollectionsComponent } from "./app-dashboard-collections/app-dashboard-collections.component";
 import { AppDashboardCrudComponent } from "./app-dashboard-crud/app-dashboard-crud.component";
 import { AppDashboardListComponent } from "./app-dashboard-list/app-dashboard-list.component";
@@ -34,6 +35,16 @@ const routes: Routes = [
                 data: {
                     breadcrumb: {
                         title: 'Create Collection',
+                        stepbackCount: 1
+                    }
+                }
+            },
+            {
+                path: 'collections/:collectionId/view',
+                component: AppDashboardCollectionsViewComponent,
+                data: {
+                    breadcrumb: {
+                        title: 'View Collection',
                         stepbackCount: 1
                     }
                 }
