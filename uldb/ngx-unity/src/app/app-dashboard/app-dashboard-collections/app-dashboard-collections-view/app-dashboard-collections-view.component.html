@@ -28,6 +28,7 @@
                 [class.has-image]="dashboard.image_url"
                 [ngStyle]="dashboard.image_url ? {'background-image': 'linear-gradient(rgba(55, 138, 216, 0.18), rgba(55, 138, 216, 0.78)), url(' + dashboard.image_url + ')'} : null">
                 <button type="button" class="collection-dashboard-upload-btn" tooltip="Upload Thumbnail"
+                    container="body"
                     (click)="openDashboardImageModal(dashboard); $event.stopPropagation()">
                     <i class="fas fa-pencil-alt"></i>
                 </button>
@@ -187,17 +188,17 @@
         <div class="card-body">
             <div class="form-group">
                 <label>Name <em>*</em></label>
-                <input type="text" class="form-control" [(ngModel)]="dashboardName" autocomplete="off">
+                <input type="text" class="form-control" [(ngModel)]="dashboardName" autocomplete="off" readonly>
             </div>
 
             <div class="form-group mb-0">
                 <label>Thumbnail <span class="text-muted ml-1">1300px X 200px</span></label>
-                <input type="file" class="d-none" accept="image/*" #dashboardImageInput
+                <input id="dashboard-thumbnail-input" type="file" class="collection-file-input" accept="image/*"
+                    #dashboardImageInput
                     (change)="onDashboardImageSelected($event)">
-                <button type="button" class="form-control text-left collection-upload-input"
-                    (click)="selectDashboardImage()">
+                <label for="dashboard-thumbnail-input" class="form-control collection-upload-input mb-0">
                     {{ dashboardImageName || 'Upload Image' }}
-                </button>
+                </label>
             </div>
         </div>
 

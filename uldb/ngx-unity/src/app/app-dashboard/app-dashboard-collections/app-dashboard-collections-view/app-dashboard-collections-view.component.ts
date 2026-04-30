@@ -209,10 +209,6 @@ export class AppDashboardCollectionsViewComponent implements OnInit, OnDestroy {
       Object.assign({}, { class: 'modal-md', keyboard: true, ignoreBackdropClick: true }));
   }
 
-  selectDashboardImage() {
-    this.dashboardImageInput.nativeElement.click();
-  }
-
   onDashboardImageSelected(event: Event) {
     const input = event.target as HTMLInputElement;
     const file = input.files && input.files.length ? input.files[0] : null;

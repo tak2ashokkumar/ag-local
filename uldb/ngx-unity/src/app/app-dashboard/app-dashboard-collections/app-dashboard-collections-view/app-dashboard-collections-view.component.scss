@@ -140,6 +140,15 @@
 .collection-upload-input {
     color: #73818f;
     background: #fff;
+    cursor: pointer;
+}
+
+.collection-file-input {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    opacity: 0;
+    pointer-events: none;
 }
 
 .collection-dashboard-panels {
