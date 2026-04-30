@@ -97,94 +97,98 @@
                 </div>
             </div>
         </div>
-        <div class="section-title mt-3">Performance Hotspots</div>
-        <div class="dashboard-card utilization-card">
-            <app-spinner [name]="loaderNames.utilization" [width]="0"></app-spinner>
-            <div class="card-title-center">Top 10 Utilization</div>
-            <div class="table-responsive">
-                <table class="table table-sm utilization-table mb-0">
-                    <thead>
-                        <tr>
-                            <th>Name</th>
-                            <th>CPU Utilization</th>
-                            <th>Memory Utilization</th>
-                            <th>Storage Utilization</th>
-                            <th>Disk IOPS</th>
-                            <th>Up Time</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr *ngFor="let row of utilizationRows; trackBy: trackByIndex">
-                            <td><button type="button" class="btn btn-link p-0 table-link">{{row.name}}</button></td>
-                            <td>
-                                <div class="sparkline-cell">
-                                    <div echarts [options]="row.cpuChartOptions" class="sparkline-chart"></div>
-                                    <span class="status-badge"
-                                        [ngClass]="getStatusClass(row.cpuTone)">{{row.cpuStatus}}%</span>
-                                </div>
-                            </td>
-                            <td>
-                                <div class="sparkline-cell">
-                                    <div echarts [options]="row.memoryChartOptions" class="sparkline-chart"></div>
-                                    <span class="status-badge"
-                                        [ngClass]="getStatusClass(row.memoryTone)">{{row.memoryStatus}}%</span>
-                                </div>
-                            </td>
-                            <td>
-                                <div class="capacity-line">Capacity: {{row.storage.capacity}}</div>
-                                <div class="progress-track">
-                                    <div class="progress-fill" [ngClass]="getStatusClass(row.storage.tone)"
-                                        [style.width.%]="row.storage.percent"></div>
-                                </div>
-                                <div class="storage-meta">
-                                    <span>Used: {{row.storage.used}}</span>
-                                    <span>Free: {{row.storage.free}}</span>
-                                </div>
-                            </td>
-                            <td>
-                                <div class="iops-cell">
-                                    <div class="progress-track">
-                                        <div class="progress-fill" [ngClass]="getStatusClass(row.diskIops.tone)"
-                                            [style.width.%]="row.diskIops.percent"></div>
+        <!-- Next sprint: uncomment this block with getUtilizationRows() in loadData().
+            <div class="section-title mt-3">Performance Hotspots</div>
+            <div class="dashboard-card utilization-card">
+                <app-spinner [name]="loaderNames.utilization" [width]="0"></app-spinner>
+                <div class="card-title-center">Top 10 Utilization</div>
+                <div class="table-responsive">
+                    <table class="table table-sm utilization-table mb-0">
+                        <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>CPU Utilization</th>
+                                <th>Memory Utilization</th>
+                                <th>Storage Utilization</th>
+                                <th>Disk IOPS</th>
+                                <th>Up Time</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr *ngFor="let row of utilizationRows; trackBy: trackByIndex">
+                                <td><button type="button" class="btn btn-link p-0 table-link">{{row.name}}</button></td>
+                                <td>
+                                    <div class="sparkline-cell">
+                                        <div echarts [options]="row.cpuChartOptions" class="sparkline-chart"></div>
+                                        <span class="status-badge"
+                                            [ngClass]="getStatusClass(row.cpuTone)">{{row.cpuStatus}}%</span>
                                     </div>
-                                    <span>{{row.diskIops.label}}</span>
-                                </div>
-                            </td>
-                            <td class="uptime-cell">{{row.upTime}}</td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-        </div>
-
-        <div class="section-title mt-3">Performance / Workload Insights</div>
-        <div class="dashboard-card insight-card">
-            <div class="insight-widget">
-                <app-spinner [name]="loaderNames.latencyWorkloads" [width]="0"></app-spinner>
-                <div class="widget-title">Top 10 - High Latency Workloads (ms)</div>
-                <div echarts [options]="latencyWorkloadOptions" class="workload-chart"></div>
-            </div>
-            <div class="insight-widget">
-                <app-spinner [name]="loaderNames.errorRateWorkloads" [width]="0"></app-spinner>
-                <div class="widget-title">Top 10 - High Error Rate Workloads (%)</div>
-                <div echarts [options]="errorRateWorkloadOptions" class="workload-chart"></div>
-            </div>
-            <div class="insight-widget">
-                <app-spinner [name]="loaderNames.databasePerformance" [width]="0"></app-spinner>
-                <app-spinner [name]="loaderNames.databaseLatencyBadges" [width]="0"></app-spinner>
-                <div class="widget-title">Database Performance</div>
-                <div class="widget-subtitle">Connections / latency / throughput</div>
-                <div echarts [options]="databasePerformanceOptions" class="database-chart"></div>
-                <div class="latency-title">Avg Query Latency</div>
-                <div class="latency-badges">
-                    <span class="latency-badge"
-                        *ngFor="let badge of databaseLatencyBadges; trackBy: trackByIndex"
-                        [style.color]="badge.textColor" [style.background]="badge.backgroundColor">
-                        {{badge.name}} {{badge.value}}
-                    </span>
+                                </td>
+                                <td>
+                                    <div class="sparkline-cell">
+                                        <div echarts [options]="row.memoryChartOptions" class="sparkline-chart"></div>
+                                        <span class="status-badge"
+                                            [ngClass]="getStatusClass(row.memoryTone)">{{row.memoryStatus}}%</span>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="capacity-line">Capacity: {{row.storage.capacity}}</div>
+                                    <div class="progress-track">
+                                        <div class="progress-fill" [ngClass]="getStatusClass(row.storage.tone)"
+                                            [style.width.%]="row.storage.percent"></div>
+                                    </div>
+                                    <div class="storage-meta">
+                                        <span>Used: {{row.storage.used}}</span>
+                                        <span>Free: {{row.storage.free}}</span>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="iops-cell">
+                                        <div class="progress-track">
+                                            <div class="progress-fill" [ngClass]="getStatusClass(row.diskIops.tone)"
+                                                [style.width.%]="row.diskIops.percent"></div>
+                                        </div>
+                                        <span>{{row.diskIops.label}}</span>
+                                    </div>
+                                </td>
+                                <td class="uptime-cell">{{row.upTime}}</td>
+                            </tr>
+                        </tbody>
+                    </table>
                 </div>
             </div>
-        </div>
+        -->
+
+        <!-- Next sprint: uncomment this block with the workload insight calls in loadData().
+            <div class="section-title mt-3">Performance / Workload Insights</div>
+            <div class="dashboard-card insight-card">
+                <div class="insight-widget">
+                    <app-spinner [name]="loaderNames.latencyWorkloads" [width]="0"></app-spinner>
+                    <div class="widget-title">Top 10 - High Latency Workloads (ms)</div>
+                    <div echarts [options]="latencyWorkloadOptions" class="workload-chart"></div>
+                </div>
+                <div class="insight-widget">
+                    <app-spinner [name]="loaderNames.errorRateWorkloads" [width]="0"></app-spinner>
+                    <div class="widget-title">Top 10 - High Error Rate Workloads (%)</div>
+                    <div echarts [options]="errorRateWorkloadOptions" class="workload-chart"></div>
+                </div>
+                <div class="insight-widget">
+                    <app-spinner [name]="loaderNames.databasePerformance" [width]="0"></app-spinner>
+                    <app-spinner [name]="loaderNames.databaseLatencyBadges" [width]="0"></app-spinner>
+                    <div class="widget-title">Database Performance</div>
+                    <div class="widget-subtitle">Connections / latency / throughput</div>
+                    <div echarts [options]="databasePerformanceOptions" class="database-chart"></div>
+                    <div class="latency-title">Avg Query Latency</div>
+                    <div class="latency-badges">
+                        <span class="latency-badge"
+                            *ngFor="let badge of databaseLatencyBadges; trackBy: trackByIndex"
+                            [style.color]="badge.textColor" [style.background]="badge.backgroundColor">
+                            {{badge.name}} {{badge.value}}
+                        </span>
+                    </div>
+                </div>
+            </div>
+        -->
 
         <div class="section-title mt-3">Alert &amp; Events View</div>
         <div class="dashboard-card alert-card">
@@ -225,7 +229,9 @@
                     </tbody>
                 </table>
             </div>
+        </div>
 
+        <div class="dashboard-card alert-trend-card mt-3">
             <div class="alert-trend-header">
                 <div class="subsection-title mb-0">Alert Trend</div>
                 <div class="alert-filters">
@@ -258,15 +264,10 @@
                 <div class="stack-area">
                     <div echarts [options]="alertTrendStackOptions" class="stack-chart"></div>
                     <div class="stack-legend">
-                        <span><span class="legend-dot bg-critical"></span>Critical - 156</span>
-                        <span><span class="legend-dot bg-dedupe"></span>Dedupe - 156</span>
-                        <span><span class="legend-dot bg-auto"></span>Auto Cloned - 156</span>
-                        <span><span class="legend-dot bg-warning"></span>Warning - 305</span>
-                        <span><span class="legend-dot bg-suppressed"></span>Suppressed - 305</span>
-                        <span><span class="legend-dot bg-ticket"></span>Ticket Created - 305</span>
-                        <span><span class="legend-dot bg-info"></span>Informative - 417</span>
-                        <span><span class="legend-dot bg-correlated"></span>Correlated - 417</span>
-                        <span><span class="legend-dot bg-closed"></span>Auto Closed - 417</span>
+                        <span *ngFor="let item of alertTrendStackLegend; trackBy: trackByIndex">
+                            <span class="legend-dot" [style.background]="item.color"></span>
+                            {{item.label}} - {{item.value}}
+                        </span>
                     </div>
                 </div>
                 <div class="side-metrics">
@@ -286,50 +287,80 @@
                     </div>
                 </div>
             </div>
+        </div>
 
-            <div class="itsm-title">ITSM Tickets</div>
+        <div class="itsm-title">ITSM Tickets</div>
+        <div class="dashboard-card itsm-card">
             <div class="ticket-chart-panel">
-                <app-spinner [name]="loaderNames.ticketPriority" [width]="0"></app-spinner>
-                <app-spinner [name]="loaderNames.ticketStatus" [width]="0"></app-spinner>
-                <div echarts [options]="ticketPriorityOptions" class="ticket-donut"></div>
-                <div echarts [options]="ticketStatusOptions" class="ticket-donut ticket-status"></div>
-                <div class="no-ticket-widget">
-                    <div class="widget-title">Solved by Response Time</div>
-                    <div class="no-ticket-text">No Tickets Found.</div>
+                <div class="ticket-chart-widget">
+                    <app-spinner [name]="loaderNames.ticketPriority" [width]="0"></app-spinner>
+                    <div echarts [options]="ticketPriorityOptions" class="ticket-donut"
+                        *ngIf="ticketPriorityHasData"></div>
+                    <div class="no-ticket-widget" *ngIf="!ticketPriorityHasData">
+                        <div class="widget-title">Tickets by Priority</div>
+                        <div class="no-ticket-text">No Tickets Found.</div>
+                    </div>
+                </div>
+                <div class="ticket-chart-widget">
+                    <app-spinner [name]="loaderNames.ticketStatus" [width]="0"></app-spinner>
+                    <div echarts [options]="ticketStatusOptions" class="ticket-donut ticket-status"
+                        *ngIf="ticketStatusHasData"></div>
+                    <div class="no-ticket-widget" *ngIf="!ticketStatusHasData">
+                        <div class="widget-title">Tickets by Status</div>
+                        <div class="no-ticket-text">No Tickets Found.</div>
+                    </div>
+                </div>
+                <div class="ticket-chart-widget">
+                    <app-spinner [name]="loaderNames.ticketResponseTime" [width]="0"></app-spinner>
+                    <div echarts [options]="ticketResponseTimeOptions" class="ticket-donut"
+                        *ngIf="ticketResponseTimeHasData"></div>
+                    <div class="no-ticket-widget" *ngIf="!ticketResponseTimeHasData">
+                        <div class="widget-title">Solved by Response Time</div>
+                        <div class="no-ticket-text">No Tickets Found.</div>
+                    </div>
                 </div>
             </div>
 
-            <div class="ticket-filter-bar">
+            <form class="ticket-filter-bar" *ngIf="ticketFilterForm" [formGroup]="ticketFilterForm">
                 <label>Search :</label>
-                <input class="form-control form-control-sm" type="text" placeholder="Enter Keyword">
+                <input class="form-control form-control-sm" type="text" placeholder="Enter Keyword"
+                    formControlName="search">
                 <label>State :</label>
-                <select class="form-control form-control-sm">
-                    <option>All</option>
+                <select class="form-control form-control-sm" formControlName="state">
+                    <option *ngFor="let option of ticketStateFilterOptions; trackBy: trackByValue"
+                        [value]="option.value">{{option.label}}</option>
                 </select>
                 <label>Date Created :</label>
-                <input class="form-control form-control-sm date-range-input" type="text"
-                    value="March 30, 2026 - April 13, 2026" readonly>
+                <div class="ticket-date-range">
+                    <input class="form-control form-control-sm" type="date" formControlName="start_date">
+                    <input class="form-control form-control-sm" type="date" formControlName="end_date">
+                </div>
                 <label>Priority :</label>
-                <select class="form-control form-control-sm">
-                    <option>All</option>
+                <select class="form-control form-control-sm" formControlName="priority">
+                    <option *ngFor="let option of ticketPriorityFilterOptions; trackBy: trackByValue"
+                        [value]="option.value">{{option.label}}</option>
                 </select>
-                <label>Type :</label>
-                <select class="form-control form-control-sm">
-                    <option>All</option>
+                <label>Display :</label>
+                <select class="form-control form-control-sm" formControlName="tickets_for">
+                    <option *ngFor="let option of ticketsForOptions; trackBy: trackByValue" [value]="option.value">
+                        {{option.label}}</option>
                 </select>
-                <button class="filter-ticket-btn" type="button">Filter Tickets</button>
+                <button class="filter-ticket-btn" type="button" (click)="filterTickets()">Filter Tickets</button>
                 <div class="ticket-actions">
                     <span>Show</span>
-                    <select class="form-control form-control-sm">
-                        <option>10</option>
+                    <select class="form-control form-control-sm" [value]="ticketPageSize"
+                        (change)="ticketPageSizeChange($event)">
+                        <option [value]="10">10</option>
+                        <option [value]="25">25</option>
+                        <option [value]="50">50</option>
                     </select>
                     <button class="create-ticket-btn" type="button">Create Ticket</button>
                     <strong>{{totalTickets}}</strong>
                     <span>Tickets</span>
                 </div>
-            </div>
+            </form>
 
-            <div class="table-responsive">
+            <div class="table-responsive ticket-table-responsive">
                 <app-spinner [name]="loaderNames.tickets" [width]="0"></app-spinner>
                 <table class="table table-sm tickets-table mb-0">
                     <thead>
@@ -355,6 +386,14 @@
                         </tr>
                     </tbody>
                 </table>
+                <div class="text-center text-muted py-3" *ngIf="!tickets.length">No Tickets To Display.</div>
+            </div>
+
+            <div class="ticket-pagination-row" *ngIf="tickets.length">
+                <table-entries [pageNo]="ticketPageNo" [pageSize]="ticketPageSize"
+                    [totalCount]="totalTickets"></table-entries>
+                <table-pager [pageNo]="ticketPageNo" [pageSize]="ticketPageSize" [totalCount]="totalTickets"
+                    (pageChange)="ticketPageChange($event)"></table-pager>
             </div>
         </div>
     </div>

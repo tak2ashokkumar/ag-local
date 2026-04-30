@@ -548,6 +548,11 @@
   padding: 18px 18px 20px;
 }
 
+.alert-trend-card {
+  padding: 0 16px 16px;
+  min-height: 420px;
+}
+
 .alert-summary {
   position: relative;
   display: flex;
@@ -626,6 +631,13 @@
   gap: 12px;
 }
 
+.alert-trend-card {
+  .alert-trend-header {
+    margin-top: 0;
+    padding: 8px 4px;
+  }
+}
+
 .alert-filters {
   display: flex;
   gap: 8px;
@@ -642,11 +654,16 @@
 .alert-trend-grid {
   position: relative;
   display: grid;
-  grid-template-columns: minmax(240px, 1fr) minmax(330px, 1.1fr) 250px;
+  grid-template-columns: minmax(300px, 0.9fr) minmax(460px, 1.25fr) 250px;
   gap: 22px;
   align-items: center;
-  padding: 12px 8px 18px;
-  min-height: 308px;
+  padding: 16px 8px 14px;
+  min-height: 350px;
+}
+
+.polar-area,
+.stack-area {
+  min-width: 0;
 }
 
 .polar-chart {
@@ -665,6 +682,12 @@
   gap: 6px 10px;
   font-size: 11px;
   color: #4e5965;
+
+  span {
+    display: inline-flex;
+    align-items: center;
+    gap: 3px;
+  }
 }
 
 .bg-critical {
@@ -765,7 +788,11 @@
   text-align: center;
   font-size: 15px;
   color: #26313b;
-  margin: 8px 0 14px;
+  margin: 14px 0 10px;
+}
+
+.itsm-card {
+  padding: 12px 14px 14px;
 }
 
 .ticket-chart-panel {
@@ -777,6 +804,11 @@
   align-items: center;
   padding: 12px 16px;
   min-height: 180px;
+}
+
+.ticket-chart-widget {
+  position: relative;
+  min-height: 154px;
 }
 
 .ticket-donut {
@@ -804,10 +836,10 @@
 }
 
 .ticket-filter-bar {
-  display: grid;
-  grid-template-columns: auto minmax(130px, 1fr) auto minmax(120px, 1fr) auto minmax(210px, 1.2fr) auto minmax(120px, 1fr) auto minmax(120px, 1fr) auto minmax(260px, auto);
+  display: flex;
   gap: 8px;
   align-items: center;
+  flex-wrap: wrap;
   background: #eef2f5;
   padding: 12px 14px;
   margin-top: 18px;
@@ -822,11 +854,18 @@
   .form-control {
     height: 26px;
     font-size: 11px;
+    width: 128px;
   }
 }
 
-.date-range-input {
-  text-align: center;
+.ticket-date-range {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+
+  .form-control {
+    width: 132px;
+  }
 }
 
 .filter-ticket-btn,
@@ -847,6 +886,7 @@
   justify-content: flex-end;
   gap: 6px;
   white-space: nowrap;
+  margin-left: auto;
 
   .form-control {
     width: 48px;
@@ -864,6 +904,18 @@
   }
 }
 
+.ticket-table-responsive {
+  margin-top: 12px;
+}
+
+.ticket-pagination-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding-top: 10px;
+}
+
 @media (max-width: 1200px) {
   .inventory-grid,
   .insight-card,
@@ -878,10 +930,6 @@
 
   .ticket-status {
     min-width: 0;
-  }
-
-  .ticket-filter-bar {
-    grid-template-columns: auto minmax(130px, 1fr) auto minmax(120px, 1fr);
   }
 }
 

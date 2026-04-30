@@ -41,7 +41,7 @@ export class AppDashboardCollectionsViewService {
 
   updateCollectionImage(uuid: string, file: File): Observable<CollectionDetailResponse> {
     const formData = new FormData();
-    formData.append('image', file);
+    formData.append('image', file, file.name);
     return this.http.patch<CollectionDetailResponse>(`${this.collectionEndpoint}${uuid}/`, formData);
   }
 
@@ -49,7 +49,7 @@ export class AppDashboardCollectionsViewService {
     const formData = new FormData();
     formData.append('name', name);
     if (file) {
-      formData.append('image', file);
+      formData.append('image', file, file.name);
     }
     return this.http.patch(`/customer/dashboards/${dashboard.uuid}/`, formData);
   }

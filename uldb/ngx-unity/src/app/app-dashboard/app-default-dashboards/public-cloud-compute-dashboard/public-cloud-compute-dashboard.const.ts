@@ -1,25 +1,32 @@
 import { environment } from 'src/environments/environment';
 import {
   PublicCloudAccountOption,
-  PublicCloudAlertSideCard,
-  PublicCloudAlertSummaryMetric,
-  PublicCloudAlertTrendBarGroup,
-  PublicCloudAlertTrendLegendItem,
-  PublicCloudComputeBreakdownProvider,
-  PublicCloudCriticalAlert,
+  PublicCloudAIOpsDetailsRawEventsDetails,
+  PublicCloudAIOpsGraphGroupKey,
+  PublicCloudAIOpsGraphMetricKey,
+  PublicCloudAlertPieKey,
+  PublicCloudAlertSummaryKey,
+  PublicCloudComputeBreakdownProviderKey,
+  PublicCloudComputeBreakdownStatKey,
   PublicCloudDatabaseLatencyBadge,
   PublicCloudFilterOption,
   PublicCloudHeatmapGroup,
   PublicCloudHorizontalBarItem,
-  PublicCloudProviderDistributionItem,
+  PublicCloudInventorySummaryKey,
+  PublicCloudProviderDistributionKey,
   PublicCloudRegionOption,
-  PublicCloudSummaryMetric,
+  PublicCloudStatusTone,
   PublicCloudTagItem,
-  PublicCloudTicketDonutItem,
-  PublicCloudTicketRow,
+  PublicCloudTicketResponseTimeKey,
   PublicCloudUtilizationRow
 } from './public-cloud-compute-dashboard.type';
 
+export const PUBLIC_CLOUD_INVENTORY_SUMMARY_ENDPOINT = '/customer/public-cloud-widgets/inventory_summary';
+export const PUBLIC_CLOUD_COMPUTE_BREAKDOWN_ENDPOINT = '/customer/public-cloud-widgets/compute_breakdown';
+export const PUBLIC_CLOUD_TOP_CRITICAL_ALERTS_ENDPOINT = '/customer/public-cloud-widgets/top_critical_alerts';
+export const PUBLIC_CLOUD_AIOPS_DETAILS_ENDPOINT = '/customer/public-cloud-widgets/aiops_details';
+export const PUBLIC_CLOUD_TICKET_GRAPH_DATA_ENDPOINT = '/customer/public-cloud-widgets/get_ticket_graph_data';
+export const PUBLIC_CLOUD_TICKETS_ENDPOINT = '/customer/public-cloud-widgets/get_tickets';
 export const PUBLIC_CLOUD_ALL_SELECTED_VALUE = 'all';
 
 export const PUBLIC_CLOUD_PLATFORM_OPTIONS: PublicCloudFilterOption[] = [
@@ -55,28 +62,28 @@ export const PUBLIC_CLOUD_ACCOUNT_OPTIONS: PublicCloudAccountOption[] = [
   { value: 'oci-eu-shared', label: 'OCI EU Shared', platform: 'oracle', region: 'west-europe' }
 ];
 
-export const PUBLIC_CLOUD_SUMMARY_METRICS: PublicCloudSummaryMetric[] = [
-  { label: 'Cloud Accounts', value: '14' },
-  { label: 'Active Region', value: '22' },
-  { label: 'VM', value: '68' },
-  { label: 'Services', value: '129' },
-  { label: 'Running Resources', value: '78' },
-  { label: 'Stopped Resources', value: '3' }
+export const PUBLIC_CLOUD_SUMMARY_METRIC_CONFIG: Array<{ key: PublicCloudInventorySummaryKey, label: string }> = [
+  { key: 'cloud_accounts', label: 'Cloud Accounts' },
+  { key: 'active_regions', label: 'Active Region' },
+  { key: 'vms', label: 'VM' },
+  { key: 'services', label: 'Services' },
+  { key: 'running_resources', label: 'Running Resources' },
+  { key: 'stopped_resources', label: 'Stopped Resources' }
 ];
 
-export const PUBLIC_CLOUD_PROVIDER_DISTRIBUTION: PublicCloudProviderDistributionItem[] = [
-  { name: 'AWS', value: 42, color: '#ff8a00' },
-  { name: 'Azure', value: 31, color: '#1683d8' },
-  { name: 'GCP', value: 19, color: '#5b80f5' },
-  { name: 'OCI', value: 8, color: '#d34b35' }
-];
+export const PUBLIC_CLOUD_PROVIDER_DISTRIBUTION_CONFIG: Record<PublicCloudProviderDistributionKey, { name: string, color: string }> = {
+  aws: { name: 'AWS', color: '#ff8a00' },
+  azure: { name: 'Azure', color: '#1683d8' },
+  gcp: { name: 'GCP', color: '#5b80f5' },
+  oci: { name: 'OCI', color: '#d34b35' }
+};
 
-export const PUBLIC_CLOUD_TAGS: PublicCloudTagItem[] = [
-  { name: 'ERP', count: '1,241', textColor: '#e24f5d', backgroundColor: '#fde8ea' },
-  { name: 'CRM', count: '891', textColor: '#b77721', backgroundColor: '#fff0d8' },
-  { name: 'Analytics', count: '743', textColor: '#2c76c4', backgroundColor: '#e8f2ff' },
-  { name: 'DevOps', count: '612', textColor: '#008f68', backgroundColor: '#dff6ed' },
-  { name: 'Other', count: '1,354', textColor: '#6f7782', backgroundColor: '#eceff2' }
+export const PUBLIC_CLOUD_TAG_STYLE_CONFIG: PublicCloudTagItem[] = [
+  { name: 'ERP', count: '', textColor: '#e24f5d', backgroundColor: '#fde8ea' },
+  { name: 'CRM', count: '', textColor: '#b77721', backgroundColor: '#fff0d8' },
+  { name: 'Analytics', count: '', textColor: '#2c76c4', backgroundColor: '#e8f2ff' },
+  { name: 'DevOps', count: '', textColor: '#008f68', backgroundColor: '#dff6ed' },
+  { name: 'Other', count: '', textColor: '#6f7782', backgroundColor: '#eceff2' }
 ];
 
 export const PUBLIC_CLOUD_REGION_HEATMAP: PublicCloudHeatmapGroup[] = [
@@ -145,51 +152,47 @@ export const PUBLIC_CLOUD_REGION_HEATMAP: PublicCloudHeatmapGroup[] = [
   }
 ];
 
-export const PUBLIC_CLOUD_COMPUTE_BREAKDOWN: PublicCloudComputeBreakdownProvider[] = [
+export const PUBLIC_CLOUD_COMPUTE_BREAKDOWN_PROVIDER_CONFIG: Array<{
+  key: PublicCloudComputeBreakdownProviderKey,
+  name: string,
+  displayName: string,
+  brandClass: string,
+  logoPath: string
+}> = [
   {
+    key: 'google_cloud',
     name: 'gcp',
     displayName: 'Google Cloud',
     brandClass: 'gcp',
-    logoPath: `${environment.assetsUrl}external-brand/logos/Google_Cloud_Platform-Logo 1.svg`,
-    stats: [
-      { name: 'Virtual Machine', value: 221 },
-      { name: 'Containers', value: 50 },
-      { name: 'Kubernetes', value: 10 }
-    ]
+    logoPath: `${environment.assetsUrl}external-brand/logos/Google_Cloud_Platform-Logo 1.svg`
   },
   {
+    key: 'azure',
     name: 'azure',
     displayName: 'Azure',
     brandClass: 'azure',
-    logoPath: `${environment.assetsUrl}external-brand/logos/Microsoft_Azure_Logo 1.svg`,
-    stats: [
-      { name: 'Virtual Machine', value: 221 },
-      { name: 'Containers', value: 50 },
-      { name: 'Kubernetes', value: 10 }
-    ]
+    logoPath: `${environment.assetsUrl}external-brand/logos/Microsoft_Azure_Logo 1.svg`
   },
   {
+    key: 'aws',
     name: 'aws',
     displayName: 'amazon web services',
     brandClass: 'aws',
-    logoPath: `${environment.assetsUrl}external-brand/logos/amazon-web-services.svg`,
-    stats: [
-      { name: 'Virtual Machine', value: 221 },
-      { name: 'Containers', value: 50 },
-      { name: 'Kubernetes', value: 10 }
-    ]
+    logoPath: `${environment.assetsUrl}external-brand/logos/amazon-web-services.svg`
   },
   {
+    key: 'oracle',
     name: 'oracle',
     displayName: 'ORACLE Cloud Infrastructure',
     brandClass: 'oracle',
-    logoPath: `${environment.assetsUrl}external-brand/logos/Oracle-cloud 1.svg`,
-    stats: [
-      { name: 'Virtual Machine', value: 221 },
-      { name: 'Containers', value: 50 },
-      { name: 'Kubernetes', value: 10 }
-    ]
+    logoPath: `${environment.assetsUrl}external-brand/logos/Oracle-cloud 1.svg`
   }
+];
+
+export const PUBLIC_CLOUD_COMPUTE_BREAKDOWN_STAT_CONFIG: Array<{ key: PublicCloudComputeBreakdownStatKey, name: string }> = [
+  { key: 'virtual_machine', name: 'Virtual Machine' },
+  { key: 'containers', name: 'Containers' },
+  { key: 'kubernetes', name: 'Kubernetes' }
 ];
 
 export const PUBLIC_CLOUD_UTILIZATION_ROWS: PublicCloudUtilizationRow[] = [
@@ -354,99 +357,148 @@ export const PUBLIC_CLOUD_DATABASE_LATENCY_BADGES: PublicCloudDatabaseLatencyBad
   { name: 'AzureSQL', value: '31ms', textColor: '#4f8b2c', backgroundColor: '#e8f2d8' }
 ];
 
-export const PUBLIC_CLOUD_ALERT_SUMMARY: PublicCloudAlertSummaryMetric[] = [
-  { label: 'Critical Alerts', value: '24', tone: 'danger' },
-  { label: 'High Alerts', value: '67', tone: 'warning' },
-  { label: 'Open ITSM Tickets', value: '14', tone: 'primary' },
-  { label: 'Automation Success', value: '91%', tone: 'success' },
-  { label: 'Avg MTTR', value: '3.2h', tone: 'muted' }
+export const PUBLIC_CLOUD_ALERT_SUMMARY_CONFIG: Array<{
+  key: PublicCloudAlertSummaryKey,
+  label: string,
+  tone: PublicCloudStatusTone,
+  suffix?: string
+}> = [
+  { key: 'critical_alerts', label: 'Critical Alerts', tone: 'danger' },
+  { key: 'high_alerts', label: 'High Alerts', tone: 'warning' },
+  { key: 'open_itsm_tickets', label: 'Open ITSM Tickets', tone: 'primary' },
+  { key: 'automation_success', label: 'Automation Success', tone: 'success', suffix: '%' },
+  { key: 'avg_mttr', label: 'Avg MTTR', tone: 'muted' }
 ];
 
-export const PUBLIC_CLOUD_CRITICAL_ALERTS: PublicCloudCriticalAlert[] = [
-  { id: '1744', deviceName: 'UL_Switch_Disk', severity: 'critical', description: 'Ethernet has changed...', source: 'Unity', acknowledged: 'Yes', duration: '34s' },
-  { id: '1746', deviceName: 'UL_Switch_Test', severity: 'critical', description: 'Ethernet has changed...', source: 'Unity', acknowledged: 'No', duration: '36s' },
-  { id: '2319', deviceName: 'UL_Firewall_Test', severity: 'critical', description: 'High bandwidth usage...', source: 'Unity', acknowledged: 'No', duration: '39s' },
-  { id: '6664', deviceName: 'UL_Switch_AT', severity: 'high', description: 'Device has been repla...', source: 'Zabbix', acknowledged: 'Yes', duration: '01m' },
-  { id: '9956', deviceName: 'UL_LoadBalancer_09', severity: 'high', description: 'System name has bee...', source: 'Nagios', acknowledged: 'No', duration: '02m 44s' },
-  { id: '1470', deviceName: 'UL_Router_AT', severity: 'high', description: 'Device has been repla...', source: 'Unity', acknowledged: 'Yes', duration: '08m 56s' },
-  { id: '7452', deviceName: 'UL_LoadBalancer_04', severity: 'critical', description: 'Interface Link down...', source: 'Nagios', acknowledged: 'Yes', duration: '10m 15s' },
-  { id: '2354', deviceName: 'UL_Switch_BT', severity: 'high', description: 'Interface : High error...', source: 'Unity', acknowledged: 'No', duration: '20m 13s' },
-  { id: '0996', deviceName: 'UL_Firewall_007', severity: 'critical', description: 'Unavailable by ICMP...', source: 'Nagios', acknowledged: 'No', duration: '01h 09m' },
-  { id: '0994', deviceName: 'UL_Firewall_007', severity: 'critical', description: 'Unavailable by ICMP...', source: 'Zabbix', acknowledged: 'Yes', duration: '01h 09m' }
+export const PUBLIC_CLOUD_ALERT_TREND_PIE_CONFIG: Array<{
+  key: PublicCloudAlertPieKey,
+  name: string,
+  color: string
+}> = [
+  { key: 'raw_events', name: 'Raw Events', color: '#ff8f8f' },
+  { key: 'alerts', name: 'Alerts', color: '#ffbf69' },
+  { key: 'conditions', name: 'Conditions', color: '#9ed0ff' }
 ];
 
-export const PUBLIC_CLOUD_ALERT_TREND_LEGEND: PublicCloudAlertTrendLegendItem[] = [
-  { name: 'Raw Events', value: 878, color: '#ff8f8f' },
-  { name: 'Alerts', value: 109, color: '#ffbf69' },
-  { name: 'Conditions', value: 32, color: '#9ed0ff' }
-];
-
-export const PUBLIC_CLOUD_ALERT_TREND_STACK_GROUPS: PublicCloudAlertTrendBarGroup[] = [
-  { name: 'Raw Events', values: [156, 305, 417] },
-  { name: 'Noise Reduction', values: [156, 305, 417] },
-  { name: 'First Response', values: [156, 305, 417] }
-];
-
-export const PUBLIC_CLOUD_ALERT_SIDE_CARDS: PublicCloudAlertSideCard[] = [
+export const PUBLIC_CLOUD_ALERT_TREND_STACK_CONFIG: Array<{
+  key: PublicCloudAIOpsGraphGroupKey,
+  name: string,
+  items: Array<{
+    key: PublicCloudAIOpsGraphMetricKey,
+    label: string,
+    color: string
+  }>
+}> = [
   {
-    title: 'Raw Events',
-    value: '878',
-    metrics: [
-      { label: 'Critical', value: '156', tone: 'danger' },
-      { label: 'Warning', value: '305', tone: 'warning' },
-      { label: 'Informative', value: '417', tone: 'primary' }
+    key: 'raw_events',
+    name: 'Raw Events',
+    items: [
+      { key: 'critical', label: 'Critical', color: '#d90000' },
+      { key: 'warning', label: 'Warning', color: '#ff8a00' },
+      { key: 'informative', label: 'Informative', color: '#62bfd8' }
     ]
   },
   {
-    title: 'Noise Reduction',
-    value: '77%',
-    metrics: [
-      { label: 'Dedupe Events', value: '589' },
-      { label: 'Suppressed Events', value: '289' },
-      { label: 'Correlated', value: '32' }
+    key: 'noise_reduction',
+    name: 'Noise Reduction',
+    items: [
+      { key: 'dedupe', label: 'Dedupe', color: '#c8ced4' },
+      { key: 'suppressed', label: 'Suppressed', color: '#9aa6b2' },
+      { key: 'correlated', label: 'Correlated', color: '#ff8f8f' }
     ]
   },
   {
-    title: 'First Response',
-    value: '92%',
-    metrics: [
-      { label: 'Auto Clonned', value: '126' },
-      { label: 'Ticket Created', value: '456' },
-      { label: 'Auto Closed', value: '378' }
+    key: 'first_response',
+    name: 'First Response',
+    items: [
+      { key: 'auto_cloned', label: 'Auto Cloned', color: '#85dba6' },
+      { key: 'ticket_created', label: 'Ticket Created', color: '#84bff0' },
+      { key: 'auto_closed', label: 'Auto Closed', color: '#009b88' }
     ]
   }
 ];
 
-export const PUBLIC_CLOUD_TICKET_PRIORITY: PublicCloudTicketDonutItem[] = [
-  { name: '2 - High', value: 12, color: '#ff5b63' },
-  { name: '4 - Low', value: 8, color: '#6979ff' },
-  { name: '3 - Moderate', value: 176, color: '#9bf04d' },
-  { name: '1 - Critical', value: 34, color: '#ff66d0' },
-  { name: '5 - Planning', value: 15, color: '#63d6c5' }
+export const PUBLIC_CLOUD_ALERT_SIDE_CARD_CONFIG: Array<{
+  title: string,
+  valueKey: keyof PublicCloudAIOpsDetailsRawEventsDetails,
+  suffix?: string,
+  metrics: Array<{
+    label: string,
+    key: keyof PublicCloudAIOpsDetailsRawEventsDetails,
+    tone?: PublicCloudStatusTone
+  }>
+}> = [
+  {
+    title: 'Raw Events',
+    valueKey: 'raw_events',
+    metrics: [
+      { label: 'Critical', key: 'critical', tone: 'danger' },
+      { label: 'Warning', key: 'warning', tone: 'warning' },
+      { label: 'Informative', key: 'informative', tone: 'primary' }
+    ]
+  },
+  {
+    title: 'Noise Reduction',
+    valueKey: 'noise_reduction',
+    suffix: '%',
+    metrics: [
+      { label: 'Dedupe Events', key: 'dedupe_events' },
+      { label: 'Suppressed Events', key: 'suppressed_events' },
+      { label: 'Correlated', key: 'correlated' }
+    ]
+  },
+  {
+    title: 'First Response',
+    valueKey: 'first_response',
+    suffix: '%',
+    metrics: [
+      { label: 'Auto Clonned', key: 'auto_cloned' },
+      { label: 'Ticket Created', key: 'ticket_created' },
+      { label: 'Auto Closed', key: 'auto_closed' }
+    ]
+  }
 ];
 
-export const PUBLIC_CLOUD_TICKET_STATUS: PublicCloudTicketDonutItem[] = [
-  { name: 'Closed with ST Self heal', value: 22, color: '#696cff' },
-  { name: 'New', value: 9, color: '#7bd88f' },
-  { name: 'Closed', value: 112, color: '#ff5fb8' },
-  { name: 'Assess', value: 15, color: '#5bb9ff' },
-  { name: 'Root Cause Analysis', value: 7, color: '#ffd166' },
-  { name: 'Schedule', value: 8, color: '#b36bff' },
-  { name: 'Authorize', value: 6, color: '#7ee2a8' },
-  { name: 'Implement', value: 12, color: '#ff9f43' },
-  { name: 'Resolved', value: 29, color: '#8bd450' },
-  { name: 'In Progress', value: 17, color: '#4b7bec' },
-  { name: 'On Hold', value: 5, color: '#9aa6b2' }
+export const PUBLIC_CLOUD_TICKET_CHART_COLORS = [
+  '#9bf04d',
+  '#ff5fb8',
+  '#696cff',
+  '#7bd88f',
+  '#5bb9ff',
+  '#ffd166',
+  '#b36bff',
+  '#ff9f43'
 ];
 
-export const PUBLIC_CLOUD_TICKETS_TOTAL = 2123;
+export const PUBLIC_CLOUD_TICKET_RESPONSE_TIME_CONFIG: Array<{
+  key: PublicCloudTicketResponseTimeKey,
+  name: string,
+  color: string
+}> = [
+  { key: 'one_day', name: '1 Day', color: '#3f9435' },
+  { key: 'one_week', name: '1 Week', color: '#0cbb70' },
+  { key: 'one_month', name: '1 Month', color: '#f8cb00' },
+  { key: 'greaterthan_month', name: '>1 Month', color: '#f86c6b' }
+];
 
-export const PUBLIC_CLOUD_TICKETS: PublicCloudTicketRow[] = [
-  { id: 'INC1803932', shortDescription: 'AWS RDS: Failed to get events data...', state: 'Closed', priority: '3 - Moderate', createdOn: 'Apr 08, 2026, 23:53:28', updatedOn: 'Apr 10, 2026, 18:30:45', resolution: 'Closed' },
-  { id: 'INC1803538', shortDescription: 'AWS ELB ALB: Too many HTTP 5XX ...', state: 'Resolved', priority: '3 - Moderate', createdOn: 'Apr 07, 2026, 19:05:30', updatedOn: 'Apr 07, 2026, 19:31:27', resolution: 'Resolved' },
-  { id: 'INC1804591', shortDescription: 'Failed to get alarms data for amplif...', state: 'Closed', priority: '3 - Moderate', createdOn: 'Apr 10, 2026, 17:58:35', updatedOn: 'Apr 11, 2026, 18:36:56', resolution: 'Closed' },
-  { id: 'INC1804291', shortDescription: 'Failed to get alarms data for cmspr...', state: 'Closed', priority: '3 - Moderate', createdOn: 'Apr 09, 2026, 19:16:31', updatedOn: 'Apr 11, 2026, 18:30:02', resolution: 'Closed' },
-  { id: 'INC1803986', shortDescription: 'AWS S3: Failed to get metrics data ...', state: 'Closed', priority: '3 - Moderate', createdOn: 'Apr 09, 2026, 00:33:39', updatedOn: 'Apr 10, 2026, 18:31:36', resolution: 'Closed' },
-  { id: 'INC1804224', shortDescription: 'AWS ELB ALB: Too many HTTP 5XX ...', state: 'Resolved', priority: '3 - Moderate', createdOn: 'Apr 09, 2026, 15:34:31', updatedOn: 'Apr 09, 2026, 15:36:46', resolution: 'Resolved' },
-  { id: 'INC1802897', shortDescription: '1.3.6.1.4.1.9.9.187.0.1 is critical', state: 'In Progress', priority: '1 - Critical', createdOn: 'Apr 01, 2026, 5:48:07', updatedOn: 'Apr 02, 2026, 18:30:10', resolution: 'In Progress' }
+export const PUBLIC_CLOUD_TICKET_STATE_OPTIONS: PublicCloudFilterOption[] = [
+  { value: '', label: 'All' },
+  { value: 'New', label: 'New' },
+  { value: 'Resolved', label: 'Resolved' },
+  { value: 'Closed', label: 'Closed' }
+];
+
+export const PUBLIC_CLOUD_TICKET_PRIORITY_OPTIONS: PublicCloudFilterOption[] = [
+  { value: '', label: 'All' },
+  { value: '1', label: '1 - Critical' },
+  { value: '2', label: '2 - High' },
+  { value: '3', label: '3 - Moderate' },
+  { value: '4', label: '4 - Low' }
+];
+
+export const PUBLIC_CLOUD_TICKETS_FOR_OPTIONS: PublicCloudFilterOption[] = [
+  { value: '', label: 'All' },
+  { value: 'all_tickets', label: 'All Tickets' },
+  { value: 'my_tickets', label: 'My Tickets' },
+  { value: 'assigned_to_me', label: 'Assigned To Me' }
 ];
