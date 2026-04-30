@@ -1,5 +1,5 @@
 import { HttpErrorResponse } from '@angular/common/http';
-import { Component, OnDestroy, OnInit, TemplateRef, ViewChild } from '@angular/core';
+import { Component, ElementRef, OnDestroy, OnInit, TemplateRef, ViewChild } from '@angular/core';
 import { ActivatedRoute, ParamMap, Router } from '@angular/router';
 import { BsModalRef, BsModalService } from 'ngx-bootstrap/modal';
 import { Subject, forkJoin, of } from 'rxjs';
@@ -30,9 +30,16 @@ export class AppDashboardCollectionsViewComponent implements OnInit, OnDestroy {
   defaultSearch = '';
   mySearch = '';
   selectedSearch = '';
+  dashboardName = '';
+  dashboardImageName = '';
+  selectedDashboard: DashboardItem | null = null;
+  selectedDashboardImage: File | null = null;
 
   modalRef: BsModalRef;
   @ViewChild('dashboardPickerRef') dashboardPickerRef: TemplateRef<any>;
+  @ViewChild('dashboardImageRef') dashboardImageRef: TemplateRef<any>;
+  @ViewChild('collectionImageInput') collectionImageInput: ElementRef<HTMLInputElement>;
+  @ViewChild('dashboardImageInput') dashboardImageInput: ElementRef<HTMLInputElement>;
 
   get collectionName(): string {
     return this.collection?.name || 'Collection';
@@ -161,6 +168,85 @@ export class AppDashboardCollectionsViewComponent implements OnInit, OnDestroy {
       });
   }
 
+  openCollectionImageSelector() {
+    this.collectionImageInput.nativeElement.click();
+  }
+
+  uploadCollectionImage(event: Event) {
+    const input = event.target as HTMLInputElement;
+    const file = input.files && input.files.length ? input.files[0] : null;
+    if (!file) {
+      return;
+    }
+
+    this.spinner.start('main');
+    this.svc.updateCollectionImage(this.collectionId, file)
+      .pipe(takeUntil(this.ngUnsubscribe))
+      .subscribe((collection: CollectionDetailResponse) => {
+        this.collection = {
+          ...this.collection,
+          image_url: collection && collection.image_url ? collection.image_url : this.collection.image_url
+        };
+        input.value = '';
+        this.spinner.stop('main');
+        this.notification.success(new Notification('Collection banner updated successfully.'));
+      }, () => {
+        input.value = '';
+        this.spinner.stop('main');
+        this.notification.error(new Notification('Failed to update Collection banner. Try again later.'));
+      });
+  }
+
+  openDashboardImageModal(dashboard: DashboardItem) {
+    this.selectedDashboard = dashboard;
+    this.dashboardName = dashboard.name;
+    this.dashboardImageName = '';
+    this.selectedDashboardImage = null;
+    if (this.dashboardImageInput) {
+      this.dashboardImageInput.nativeElement.value = '';
+    }
+    this.modalRef = this.modalService.show(this.dashboardImageRef,
+      Object.assign({}, { class: 'modal-md', keyboard: true, ignoreBackdropClick: true }));
+  }
+
+  selectDashboardImage() {
+    this.dashboardImageInput.nativeElement.click();
+  }
+
+  onDashboardImageSelected(event: Event) {
+    const input = event.target as HTMLInputElement;
+    const file = input.files && input.files.length ? input.files[0] : null;
+    if (!file) {
+      return;
+    }
+    this.selectedDashboardImage = file;
+    this.dashboardImageName = file.name;
+  }
+
+  updateDashboardImage() {
+    if (!this.selectedDashboard) {
+      return;
+    }
+
+    this.spinner.start('main');
+    this.svc.updateDashboardImage(this.selectedDashboard, this.dashboardName, this.selectedDashboardImage)
+      .pipe(takeUntil(this.ngUnsubscribe))
+      .subscribe((dashboard: any) => {
+        const selectedDashboard = this.selectedDashboard as DashboardItem;
+        const imageUrl = dashboard && dashboard.image_url ? dashboard.image_url : selectedDashboard.image_url;
+        this.updateDashboardInLists(selectedDashboard.uuid, this.dashboardName, imageUrl);
+        if (this.dashboardImageInput) {
+          this.dashboardImageInput.nativeElement.value = '';
+        }
+        this.modalRef.hide();
+        this.spinner.stop('main');
+        this.notification.success(new Notification('Dashboard thumbnail updated successfully.'));
+      }, () => {
+        this.spinner.stop('main');
+        this.notification.error(new Notification('Failed to update Dashboard thumbnail. Try again later.'));
+      });
+  }
+
   isDashboardInModalSelection(item: DashboardItem): boolean {
     return this.modalSelectedDashboards.some(dashboard => dashboard.uuid === item.uuid);
   }
@@ -175,5 +261,16 @@ export class AppDashboardCollectionsViewComponent implements OnInit, OnDestroy {
 
   private clearSourceSelections() {
     [...this.defaultDashboards, ...this.myDashboards].forEach(dashboard => dashboard.checked = false);
+  }
+
+  private updateDashboardInLists(uuid: string, name: string, imageUrl: string | undefined) {
+    [this.selectedDashboards, this.modalSelectedDashboards, this.defaultDashboards, this.myDashboards].forEach(list => {
+      (list || []).forEach(dashboard => {
+        if (dashboard.uuid === uuid) {
+          dashboard.name = name;
+          dashboard.image_url = imageUrl;
+        }
+      });
+    });
   }
 }

@@ -17,7 +17,7 @@ export class AppDashboardCollectionsViewService {
   getDefaultDashboards(): Observable<DashboardItem[]> {
     return this.http.get<any[]>(`/customer/dashboards/?type=preset&page_size=0`).pipe(
       map(res => (res || []).map((d: any) => ({
-        id: d.id, uuid: d.uuid, name: d.name, source: 'default' as const, checked: false
+        id: d.id, uuid: d.uuid, name: d.name, source: 'default' as const, checked: false, image_url: d.image_url
       })))
     );
   }
@@ -27,7 +27,7 @@ export class AppDashboardCollectionsViewService {
       map(res => (res || [])
         .filter((d: any) => d.status === 'published')
         .map((d: any) => ({
-          id: d.id, uuid: d.uuid, name: d.name, source: 'personal' as const, checked: false
+          id: d.id, uuid: d.uuid, name: d.name, source: 'personal' as const, checked: false, image_url: d.image_url
         }))
       )
     );
@@ -37,6 +37,21 @@ export class AppDashboardCollectionsViewService {
     return this.http.patch(`${this.collectionEndpoint}${uuid}/`, {
       dashboards: this.convertToDashboardPayload(dashboards)
     });
+  }
+
+  updateCollectionImage(uuid: string, file: File): Observable<CollectionDetailResponse> {
+    const formData = new FormData();
+    formData.append('image', file);
+    return this.http.patch<CollectionDetailResponse>(`${this.collectionEndpoint}${uuid}/`, formData);
+  }
+
+  updateDashboardImage(dashboard: DashboardItem, name: string, file?: File | null): Observable<any> {
+    const formData = new FormData();
+    formData.append('name', name);
+    if (file) {
+      formData.append('image', file);
+    }
+    return this.http.patch(`/customer/dashboards/${dashboard.uuid}/`, formData);
   }
 
   convertToDashboardPayload(dashboards: DashboardItem[]): CollectionDashboardPayload[] {

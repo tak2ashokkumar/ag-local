@@ -12,6 +12,23 @@
     border: 2px dashed #c8d2dc;
     border-radius: 8px;
     background: #fff;
+    background-position: center;
+    background-size: cover;
+    cursor: pointer;
+
+    &.has-image {
+        border-style: solid;
+    }
+}
+
+.collection-upload-copy {
+    padding: 8px 18px;
+    border-radius: 4px;
+    text-align: center;
+}
+
+.collection-banner-placeholder.has-image .collection-upload-copy {
+    background: rgba(255, 255, 255, 0.88);
 }
 
 .collection-dashboard-grid {
@@ -34,6 +51,8 @@
     background:
         linear-gradient(rgba(55, 138, 216, 0.24), rgba(55, 138, 216, 0.76)),
         repeating-linear-gradient(90deg, #eef3f7 0 48px, #dfe7ee 48px 50px);
+    background-position: center;
+    background-size: cover;
 }
 
 .collection-dashboard-card-overlay {
@@ -48,6 +67,21 @@
     font-weight: 600;
     line-height: 1.15;
     text-align: center;
+}
+
+.collection-dashboard-upload-btn {
+    position: absolute;
+    top: 18px;
+    right: 18px;
+    z-index: 2;
+    width: 36px;
+    height: 36px;
+    border: 0;
+    border-radius: 50%;
+    color: #2e86de;
+    background: #fff;
+    box-shadow: 0 1px 5px rgba(0, 0, 0, 0.22);
+    cursor: pointer;
 }
 
 .collection-select-dashboard-card {
@@ -73,6 +107,39 @@
             min-width: 92px;
         }
     }
+}
+
+.collection-edit-dashboard-modal {
+    width: 560px;
+    max-width: 100%;
+    border-radius: 0;
+
+    .card-body {
+        padding: 18px;
+    }
+
+    .card-footer {
+        border-top: 1px solid #c8d2dc;
+        background: #f5f7f9;
+
+        .btn {
+            min-width: 88px;
+        }
+    }
+
+    label {
+        font-size: 14px;
+    }
+
+    em {
+        color: #f86c6b;
+        font-style: normal;
+    }
+}
+
+.collection-upload-input {
+    color: #73818f;
+    background: #fff;
 }
 
 .collection-dashboard-panels {

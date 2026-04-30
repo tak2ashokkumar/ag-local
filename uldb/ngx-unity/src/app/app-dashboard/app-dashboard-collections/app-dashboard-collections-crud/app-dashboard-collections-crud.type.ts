@@ -18,6 +18,7 @@ export interface DashboardItem {
   name: string;
   source: 'default' | 'personal';
   checked: boolean;
+  image_url?: string;
 }
 
 export interface CollectionDashboardPayload {
@@ -45,4 +46,5 @@ export interface CollectionDetailResponse {
   dashboard_ids?: any[];
   user_roles?: any[];
   user_groups?: any[];
+  image_url?: string;
 }
