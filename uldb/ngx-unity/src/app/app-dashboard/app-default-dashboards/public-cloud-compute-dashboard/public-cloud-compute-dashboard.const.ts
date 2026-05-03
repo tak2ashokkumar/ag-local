@@ -460,14 +460,14 @@ export const PUBLIC_CLOUD_ALERT_SIDE_CARD_CONFIG: Array<{
 ];
 
 export const PUBLIC_CLOUD_TICKET_CHART_COLORS = [
-  '#9bf04d',
-  '#ff5fb8',
-  '#696cff',
-  '#7bd88f',
-  '#5bb9ff',
-  '#ffd166',
-  '#b36bff',
-  '#ff9f43'
+  '#4caf8f',
+  '#3a7bd5',
+  '#8492a6',
+  '#f2a33a',
+  '#d95d5d',
+  '#6b5dd3',
+  '#2fa7a0',
+  '#9aa6b2'
 ];
 
 export const PUBLIC_CLOUD_TICKET_RESPONSE_TIME_CONFIG: Array<{
@@ -475,10 +475,10 @@ export const PUBLIC_CLOUD_TICKET_RESPONSE_TIME_CONFIG: Array<{
   name: string,
   color: string
 }> = [
-  { key: 'one_day', name: '1 Day', color: '#3f9435' },
-  { key: 'one_week', name: '1 Week', color: '#0cbb70' },
-  { key: 'one_month', name: '1 Month', color: '#f8cb00' },
-  { key: 'greaterthan_month', name: '>1 Month', color: '#f86c6b' }
+  { key: 'one_day', name: '1 Day', color: '#4caf8f' },
+  { key: 'one_week', name: '1 Week', color: '#3a7bd5' },
+  { key: 'one_month', name: '1 Month', color: '#f2a33a' },
+  { key: 'greaterthan_month', name: '>1 Month', color: '#d95d5d' }
 ];
 
 export const PUBLIC_CLOUD_TICKET_STATE_OPTIONS: PublicCloudFilterOption[] = [
@@ -496,9 +496,9 @@ export const PUBLIC_CLOUD_TICKET_PRIORITY_OPTIONS: PublicCloudFilterOption[] = [
   { value: '4', label: '4 - Low' }
 ];
 
-export const PUBLIC_CLOUD_TICKETS_FOR_OPTIONS: PublicCloudFilterOption[] = [
+export const PUBLIC_CLOUD_TICKET_TYPE_OPTIONS: PublicCloudFilterOption[] = [
   { value: '', label: 'All' },
-  { value: 'all_tickets', label: 'All Tickets' },
-  { value: 'my_tickets', label: 'My Tickets' },
-  { value: 'assigned_to_me', label: 'Assigned To Me' }
+  { value: 'change_request', label: 'Change Request' },
+  { value: 'incident', label: 'Incident' },
+  { value: 'problem', label: 'Problem' }
 ];

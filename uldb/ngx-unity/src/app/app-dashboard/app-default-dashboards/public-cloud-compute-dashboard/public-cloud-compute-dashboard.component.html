@@ -34,13 +34,17 @@
                 container="body">
                 <i class="fas fa-filter"></i>
             </button>
-            <button class="round-action-btn" type="button" (click)="refreshFilters()" [tooltip]="'Reset Filters'"
-                container="body">
-                <i class="fas fa-sync-alt"></i>
-            </button>
-            <button class="round-action-btn" type="button" (click)="goBack()" [tooltip]="'Go Back'" container="body">
-                <i class="fa fa-arrow-left"></i>
-            </button>
+            <span class="dashboard-action-separator"></span>
+            <div class="dashboard-filter-actions">
+                <button class="round-action-btn" type="button" (click)="refreshFilters()" [tooltip]="'Reset Filters'"
+                    container="body">
+                    <i class="fas fa-sync-alt"></i>
+                </button>
+                <button class="round-action-btn" type="button" (click)="goBack()" [tooltip]="'Go Back'"
+                    container="body">
+                    <i class="fa fa-arrow-left"></i>
+                </button>
+            </div>
         </form>
     </div>
 
@@ -57,30 +61,36 @@
             </div>
             <div class="inventory-grid">
                 <div class="provider-panel">
-                    <app-spinner [name]="loaderNames.providerDistribution" [width]="0"></app-spinner>
-                    <app-spinner [name]="loaderNames.tags" [width]="0"></app-spinner>
-                    <div class="widget-title">Cloud Provider Distribution</div>
-                    <div echarts [options]="providerDistributionOptions" class="provider-chart"></div>
-                    <div class="provider-legend">
-                        <span class="legend-item"
-                            *ngFor="let provider of providerDistribution; trackBy: trackByIndex">
-                            <span class="legend-dot" [style.background]="provider.color"></span>
-                            {{provider.name}} {{provider.value}}%
-                        </span>
+                    <div class="provider-distribution-panel">
+                        <app-spinner [name]="loaderNames.providerDistribution" [width]="0"></app-spinner>
+                        <div class="widget-title">Cloud Provider Distribution</div>
+                        <div echarts [options]="providerDistributionOptions" class="provider-chart"></div>
+                        <div class="provider-legend">
+                            <span class="legend-item"
+                                *ngFor="let provider of providerDistribution; trackBy: trackByIndex">
+                                <span class="legend-dot" [style.background]="provider.color"></span>
+                                {{provider.name}} {{provider.value}}%
+                            </span>
+                        </div>
                     </div>
-                    <div class="tags-title">Tags</div>
-                    <div class="tag-list">
-                        <span class="tag-chip" *ngFor="let tag of tags; trackBy: trackByIndex"
-                            [style.color]="tag.textColor" [style.background]="tag.backgroundColor">
-                            {{tag.name}} {{tag.count}}
-                        </span>
+                    <div class="tags-panel">
+                        <app-spinner [name]="loaderNames.tags" [width]="0"></app-spinner>
+                        <div class="tags-title">Tags</div>
+                        <div class="tag-list">
+                            <span class="tag-chip" *ngFor="let tag of tags; trackBy: trackByIndex"
+                                [style.color]="tag.textColor" [style.background]="tag.backgroundColor">
+                                {{tag.name}} {{tag.count}}
+                            </span>
+                        </div>
                     </div>
                 </div>
-                <div class="heatmap-panel">
-                    <app-spinner [name]="loaderNames.regionHeatmap" [width]="0"></app-spinner>
-                    <div class="widget-title">Regions / AZ Usage Heatmap</div>
-                    <div echarts [options]="heatmapOptions" class="heatmap-chart"></div>
-                </div>
+                <!-- Next sprint: uncomment this block with getRegionHeatmap() in loadData().
+                    <div class="heatmap-panel">
+                        <app-spinner [name]="loaderNames.regionHeatmap" [width]="0"></app-spinner>
+                        <div class="widget-title">Regions / AZ Usage Heatmap</div>
+                        <div echarts [options]="heatmapOptions" class="heatmap-chart"></div>
+                    </div>
+                -->
             </div>
         </div>
 
@@ -234,20 +244,6 @@
         <div class="dashboard-card alert-trend-card mt-3">
             <div class="alert-trend-header">
                 <div class="subsection-title mb-0">Alert Trend</div>
-                <div class="alert-filters">
-                    <select class="form-control form-control-sm">
-                        <option>6 Hour</option>
-                    </select>
-                    <select class="form-control form-control-sm">
-                        <option>All Datacenter</option>
-                    </select>
-                    <select class="form-control form-control-sm">
-                        <option>All Cloud</option>
-                    </select>
-                    <select class="form-control form-control-sm">
-                        <option>Device Type</option>
-                    </select>
-                </div>
             </div>
             <div class="alert-trend-grid">
                 <app-spinner [name]="loaderNames.alertTrend" [width]="0"></app-spinner>
@@ -289,8 +285,23 @@
             </div>
         </div>
 
-        <div class="itsm-title">ITSM Tickets</div>
-        <div class="dashboard-card itsm-card">
+        <div class="dashboard-card itsm-card mt-3">
+            <div class="alert-trend-header">
+                <div class="subsection-title mb-0">ITSM Tickets</div>
+                <div class="ticket-header-date-filter" *ngIf="ticketFilterForm" [formGroup]="ticketFilterForm">
+                    <label>Date Created :</label>
+                    <owl-date-time #ticketDateRangePicker [hour12Timer]="true"
+                        [pickerType]="'calendar'" [scrollStrategy]="ticketDatePickerScrollStrategy"></owl-date-time>
+                    <input class="form-control form-control-sm text-center"
+                        [owlDateTimeTrigger]="ticketDateRangePicker" [owlDateTime]="ticketDateRangePicker"
+                        type="text" formControlName="dateRange" [selectMode]="'range'"
+                        (dateTimeInput)="ticketDateRangeChange()">
+                    <button class="ticket-refresh-btn" type="button" (click)="refreshTickets()"
+                        [tooltip]="'Refresh Tickets'" container="body">
+                        <i class="fas fa-sync-alt"></i>
+                    </button>
+                </div>
+            </div>
             <div class="ticket-chart-panel">
                 <div class="ticket-chart-widget">
                     <app-spinner [name]="loaderNames.ticketPriority" [width]="0"></app-spinner>
@@ -322,41 +333,47 @@
             </div>
 
             <form class="ticket-filter-bar" *ngIf="ticketFilterForm" [formGroup]="ticketFilterForm">
-                <label>Search :</label>
-                <input class="form-control form-control-sm" type="text" placeholder="Enter Keyword"
-                    formControlName="search">
-                <label>State :</label>
-                <select class="form-control form-control-sm" formControlName="state">
-                    <option *ngFor="let option of ticketStateFilterOptions; trackBy: trackByValue"
-                        [value]="option.value">{{option.label}}</option>
-                </select>
-                <label>Date Created :</label>
-                <div class="ticket-date-range">
-                    <input class="form-control form-control-sm" type="date" formControlName="start_date">
-                    <input class="form-control form-control-sm" type="date" formControlName="end_date">
-                </div>
-                <label>Priority :</label>
-                <select class="form-control form-control-sm" formControlName="priority">
-                    <option *ngFor="let option of ticketPriorityFilterOptions; trackBy: trackByValue"
-                        [value]="option.value">{{option.label}}</option>
-                </select>
-                <label>Display :</label>
-                <select class="form-control form-control-sm" formControlName="tickets_for">
-                    <option *ngFor="let option of ticketsForOptions; trackBy: trackByValue" [value]="option.value">
-                        {{option.label}}</option>
-                </select>
-                <button class="filter-ticket-btn" type="button" (click)="filterTickets()">Filter Tickets</button>
-                <div class="ticket-actions">
-                    <span>Show</span>
-                    <select class="form-control form-control-sm" [value]="ticketPageSize"
-                        (change)="ticketPageSizeChange($event)">
-                        <option [value]="10">10</option>
-                        <option [value]="25">25</option>
-                        <option [value]="50">50</option>
-                    </select>
-                    <button class="create-ticket-btn" type="button">Create Ticket</button>
-                    <strong>{{totalTickets}}</strong>
-                    <span>Tickets</span>
+                <div class="ticket-filter-row">
+                    <div class="ticket-filter-field ticket-search-field">
+                        <label>Search :</label>
+                        <input class="form-control form-control-sm" type="text" placeholder="Enter Keyword"
+                            formControlName="search">
+                    </div>
+                    <div class="ticket-filter-field ticket-state-field">
+                        <label>State :</label>
+                        <select class="form-control form-control-sm" formControlName="state">
+                            <option *ngFor="let option of ticketStateFilterOptions; trackBy: trackByValue"
+                                [value]="option.value">{{option.label}}</option>
+                        </select>
+                    </div>
+                    <div class="ticket-filter-field ticket-priority-field">
+                        <label>Priority :</label>
+                        <select class="form-control form-control-sm" formControlName="priority">
+                            <option *ngFor="let option of ticketPriorityFilterOptions; trackBy: trackByValue"
+                                [value]="option.value">{{option.label}}</option>
+                        </select>
+                    </div>
+                    <div class="ticket-filter-field ticket-type-field">
+                        <label>Type :</label>
+                        <select class="form-control form-control-sm" formControlName="ticket_type">
+                            <option *ngFor="let option of ticketTypeFilterOptions; trackBy: trackByValue"
+                                [value]="option.value">{{option.label}}</option>
+                        </select>
+                    </div>
+                    <button class="filter-ticket-btn" type="button" (click)="filterTickets()">Filter</button>
+                    <span class="ticket-action-separator"></span>
+                    <div class="ticket-actions">
+                        <span>Show</span>
+                        <select class="form-control form-control-sm" [value]="ticketPageSize"
+                            (change)="ticketPageSizeChange($event)">
+                            <option [value]="10">10</option>
+                            <option [value]="25">25</option>
+                            <option [value]="50">50</option>
+                        </select>
+                        <button class="create-ticket-btn" type="button">Create Ticket</button>
+                        <strong>{{totalTickets}}</strong>
+                        <span>Tickets</span>
+                    </div>
                 </div>
             </form>
 

@@ -1,4 +1,5 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Overlay, ScrollStrategy } from '@angular/cdk/overlay';
 import { FormGroup } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { EChartsOption } from 'echarts';
@@ -9,7 +10,7 @@ import { IMultiSelectSettings, IMultiSelectTexts } from 'src/app/shared/multisel
 import {
   PUBLIC_CLOUD_TICKET_PRIORITY_OPTIONS,
   PUBLIC_CLOUD_TICKET_STATE_OPTIONS,
-  PUBLIC_CLOUD_TICKETS_FOR_OPTIONS
+  PUBLIC_CLOUD_TICKET_TYPE_OPTIONS
 } from './public-cloud-compute-dashboard.const';
 import { PublicCloudComputeDashboardService } from './public-cloud-compute-dashboard.service';
 import {
@@ -41,6 +42,7 @@ import {
 export class PublicCloudComputeDashboardComponent implements OnInit, OnDestroy {
   private ngUnsubscribe = new Subject<void>();
   private filterFormUnsubscribe = new Subject<void>();
+  private appliedTicketDateRangeKey = '';
 
   filterForm: FormGroup;
   ticketFilterForm: FormGroup;
@@ -49,7 +51,7 @@ export class PublicCloudComputeDashboardComponent implements OnInit, OnDestroy {
   accountOptions: PublicCloudAccountOption[] = [];
   ticketStateFilterOptions: PublicCloudFilterOption[] = PUBLIC_CLOUD_TICKET_STATE_OPTIONS;
   ticketPriorityFilterOptions: PublicCloudFilterOption[] = PUBLIC_CLOUD_TICKET_PRIORITY_OPTIONS;
-  ticketsForOptions: PublicCloudFilterOption[] = PUBLIC_CLOUD_TICKETS_FOR_OPTIONS;
+  ticketTypeFilterOptions: PublicCloudFilterOption[] = PUBLIC_CLOUD_TICKET_TYPE_OPTIONS;
 
   summaryMetrics: PublicCloudSummaryMetric[] = [];
   providerDistribution: PublicCloudProviderDistributionItem[] = [];
@@ -79,6 +81,7 @@ export class PublicCloudComputeDashboardComponent implements OnInit, OnDestroy {
   totalTickets = 0;
   ticketPageNo = 1;
   ticketPageSize = 10;
+  ticketDatePickerScrollStrategy: ScrollStrategy;
 
   loaderNames = {
     filters: 'publicCloudFiltersLoader',
@@ -129,7 +132,10 @@ export class PublicCloudComputeDashboardComponent implements OnInit, OnDestroy {
   constructor(private svc: PublicCloudComputeDashboardService,
     private router: Router,
     private route: ActivatedRoute,
-    private spinnerService: AppSpinnerService) { }
+    private spinnerService: AppSpinnerService,
+    private overlay: Overlay) {
+    this.ticketDatePickerScrollStrategy = this.overlay.scrollStrategies.reposition();
+  }
 
   ngOnInit(): void {
     setTimeout(() => this.loadFilterOptionsAndDashboard(), 0);
@@ -256,6 +262,7 @@ export class PublicCloudComputeDashboardComponent implements OnInit, OnDestroy {
     this.ticketFilterForm = this.svc.buildTicketFilterForm();
     this.ticketPageNo = 1;
     this.ticketPageSize = 10;
+    this.appliedTicketDateRangeKey = this.getTicketDateRangeKey();
   }
 
   /** Clears existing filter form/options so a fresh filter loading sequence can run. */
@@ -263,6 +270,7 @@ export class PublicCloudComputeDashboardComponent implements OnInit, OnDestroy {
     this.filterFormUnsubscribe.next();
     this.filterForm = null;
     this.ticketFilterForm = null;
+    this.appliedTicketDateRangeKey = '';
     this.platformOptions = [];
     this.regionOptions = [];
     this.accountOptions = [];
@@ -346,7 +354,8 @@ export class PublicCloudComputeDashboardComponent implements OnInit, OnDestroy {
     const filterFormOutput = this.getFilterFormOutput();
     setTimeout(() => {
       this.getInventorySummary(filterFormOutput);
-      this.getRegionHeatmap(filterFormOutput);
+      // Next sprint: uncomment this call with the Regions / AZ Usage Heatmap template block.
+      // this.getRegionHeatmap(filterFormOutput);
       this.getComputeBreakdown(filterFormOutput);
       // Next sprint: uncomment these calls with the Performance Hotspots and Performance / Workload Insights template blocks.
       // this.getUtilizationRows(filterFormOutput);
@@ -553,7 +562,7 @@ export class PublicCloudComputeDashboardComponent implements OnInit, OnDestroy {
   getTicketGraphData(filterFormOutput: PublicCloudDashboardFilterCriteria) {
     this.clearTicketGraphViewData();
     this.startTicketGraphLoaders();
-    this.svc.getTicketGraphData(filterFormOutput, this.getTicketFilterFormOutput()).pipe(
+    this.svc.getTicketGraphData(filterFormOutput, this.getTicketDateFilterFormOutput()).pipe(
       takeUntil(this.ngUnsubscribe),
       finalize(() => this.stopTicketGraphLoaders())
     ).subscribe(res => {
@@ -615,6 +624,23 @@ export class PublicCloudComputeDashboardComponent implements OnInit, OnDestroy {
       return;
     }
     this.ticketPageNo = 1;
+    this.syncTicketDateRangeFields();
+    this.appliedTicketDateRangeKey = this.getTicketDateRangeKey();
+    const filterFormOutput = this.getFilterFormOutput();
+    this.getTickets(filterFormOutput);
+  }
+
+  ticketDateRangeChange() {
+    if (!this.hasFilterFormData() || !this.ticketFilterForm) {
+      return;
+    }
+    this.syncTicketDateRangeFields();
+    const nextDateRangeKey = this.getTicketDateRangeKey();
+    if (!nextDateRangeKey || nextDateRangeKey === this.appliedTicketDateRangeKey) {
+      return;
+    }
+    this.appliedTicketDateRangeKey = nextDateRangeKey;
+    this.ticketPageNo = 1;
     const filterFormOutput = this.getFilterFormOutput();
     this.getTicketGraphData(filterFormOutput);
     this.getTickets(filterFormOutput);
@@ -624,7 +650,11 @@ export class PublicCloudComputeDashboardComponent implements OnInit, OnDestroy {
     if (!this.hasFilterFormData()) {
       return;
     }
-    this.getTickets(this.getFilterFormOutput());
+    this.syncTicketDateRangeFields();
+    this.appliedTicketDateRangeKey = this.getTicketDateRangeKey();
+    const filterFormOutput = this.getFilterFormOutput();
+    this.getTicketGraphData(filterFormOutput);
+    this.getTickets(filterFormOutput);
   }
 
   ticketPageChange(pageNo: number) {
@@ -643,16 +673,65 @@ export class PublicCloudComputeDashboardComponent implements OnInit, OnDestroy {
 
   private getTicketFilterFormOutput(): PublicCloudTicketFilterCriteria {
     const data = this.ticketFilterForm?.getRawValue() || {};
+    const dateRangeValues = this.getTicketDateRangeValues();
     return {
       state: data.state || '',
-      tickets_for: data.tickets_for || '',
+      ticket_type: data.ticket_type || '',
       search: data.search || '',
       priority: data.priority || '',
-      dateRange: data.dateRange || '',
-      start_date: data.start_date || '',
-      end_date: data.end_date || '',
+      dateRange: '',
+      start_date: dateRangeValues.startDate,
+      end_date: dateRangeValues.endDate,
       page: this.ticketPageNo,
       page_size: this.ticketPageSize
+    };
+  }
+
+  private getTicketDateFilterFormOutput(): PublicCloudTicketFilterCriteria {
+    const dateRangeValues = this.getTicketDateRangeValues();
+    return {
+      state: '',
+      ticket_type: '',
+      search: '',
+      priority: '',
+      dateRange: '',
+      start_date: dateRangeValues.startDate,
+      end_date: dateRangeValues.endDate,
+      page: 1,
+      page_size: this.ticketPageSize
+    };
+  }
+
+  private syncTicketDateRangeFields() {
+    const dateRangeValues = this.getTicketDateRangeValues();
+    if (!dateRangeValues.isComplete || !this.ticketFilterForm) {
+      return;
+    }
+    this.ticketFilterForm.patchValue({
+      start_date: dateRangeValues.startDate,
+      end_date: dateRangeValues.endDate
+    }, { emitEvent: false });
+  }
+
+  private getTicketDateRangeKey(): string {
+    const dateRangeValues = this.getTicketDateRangeValues();
+    if (!dateRangeValues.isComplete) {
+      return '';
+    }
+    return `${dateRangeValues.startDate}|${dateRangeValues.endDate}`;
+  }
+
+  private getTicketDateRangeValues(): { startDate: string; endDate: string; isComplete: boolean } {
+    const data = this.ticketFilterForm?.getRawValue() || {};
+    const dateRange = Array.isArray(data.dateRange) ? data.dateRange : [];
+    const hasDateRangeValue = !!dateRange.length;
+    const hasPartialDateRange = hasDateRangeValue && (!dateRange[0] || !dateRange[1]);
+    const startDate = this.svc.getTicketFilterDateValue(dateRange[0]) || data.start_date || '';
+    const endDate = this.svc.getTicketFilterDateValue(dateRange[1]) || data.end_date || '';
+    return {
+      startDate,
+      endDate,
+      isComplete: !hasPartialDateRange && !!startDate && !!endDate
     };
   }
 

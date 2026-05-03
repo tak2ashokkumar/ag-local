@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { EChartsOption } from 'echarts';
+import * as moment from 'moment';
 import { Observable, of } from 'rxjs';
 import { AppUtilityService } from 'src/app/shared/app-utility/app-utility.service';
 import {
@@ -203,7 +204,7 @@ export class PublicCloudComputeDashboardService {
       series: [
         {
           type: 'pie',
-          radius: ['52%', '72%'],
+          radius: ['50%', '76%'],
           center: ['50%', '50%'],
           avoidLabelOverlap: true,
           label: { show: false },
@@ -753,12 +754,12 @@ export class PublicCloudComputeDashboardService {
     const dateRange = this.getDefaultTicketDateRange();
     return this.builder.group({
       state: [''],
-      tickets_for: [''],
+      ticket_type: [''],
       search: [''],
       priority: [''],
-      dateRange: [''],
-      start_date: [dateRange.startDate],
-      end_date: [dateRange.endDate]
+      dateRange: [[dateRange.startDate, dateRange.endDate]],
+      start_date: [this.getTicketFilterDateValue(dateRange.startDate)],
+      end_date: [this.getTicketFilterDateValue(dateRange.endDate)]
     });
   }
 
@@ -832,7 +833,7 @@ export class PublicCloudComputeDashboardService {
     }
     const filterKeys: Array<keyof PublicCloudTicketFilterCriteria> = [
       'state',
-      'tickets_for',
+      'ticket_type',
       'search',
       'priority',
       'dateRange',
@@ -856,14 +857,23 @@ export class PublicCloudComputeDashboardService {
     }));
   }
 
-  private getDefaultTicketDateRange(): { startDate: string, endDate: string } {
-    const endDate = new Date();
-    endDate.setDate(endDate.getDate() - 1);
-    const startDate = new Date(endDate);
-    startDate.setDate(startDate.getDate() - 14);
+  getTicketFilterDateValue(value: any): string {
+    if (!value) {
+      return '';
+    }
+    if (value.format) {
+      return value.format('YYYY-MM-DD');
+    }
+    const date = new Date(value);
+    return isNaN(date.getTime()) ? '' : this.formatDateForInput(date);
+  }
+
+  private getDefaultTicketDateRange(): { startDate: moment.Moment, endDate: moment.Moment } {
+    const endDate = moment().subtract(1, 'day');
+    const startDate = endDate.clone().subtract(14, 'days');
     return {
-      startDate: this.formatDateForInput(startDate),
-      endDate: this.formatDateForInput(endDate)
+      startDate,
+      endDate
     };
   }
 
@@ -918,18 +928,23 @@ export class PublicCloudComputeDashboardService {
       series: [
         {
           type: 'pie',
-          radius: ['42%', '66%'],
+          radius: ['43%', '67%'],
           center: ['50%', '46%'],
           label: {
-            formatter: '{c}',
-            color: '#ffffff',
-            fontSize: 8
+            show: false
           },
           labelLine: { show: false },
+          emphasis: {
+            scale: false
+          },
           data: items.map(item => ({
             name: item.name,
             value: item.value,
-            itemStyle: { color: item.color }
+            itemStyle: {
+              color: item.color,
+              borderColor: '#ffffff',
+              borderWidth: 2
+            }
           }))
         }
       ]

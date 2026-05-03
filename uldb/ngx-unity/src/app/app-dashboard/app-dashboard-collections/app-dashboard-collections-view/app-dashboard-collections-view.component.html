@@ -1,8 +1,4 @@
 <div class="collection-view-page mt-2 mx-2">
-    <div class="d-flex justify-content-center py-4" *ngIf="!collection">
-        <app-spinner [name]="'main'" [width]="0"></app-spinner>
-    </div>
-
     <ng-container *ngIf="collection">
         <div class="collection-view-header d-flex justify-content-between align-items-center">
             <h5 class="mb-0 font-500">{{ collectionName }}</h5>
@@ -16,32 +12,41 @@
         <div class="collection-banner-placeholder d-flex flex-column justify-content-center align-items-center"
             [class.has-image]="collection.image_url"
             [ngStyle]="collection.image_url ? {'background-image': 'url(' + collection.image_url + ')'} : null"
-            (click)="openCollectionImageSelector()">
-            <div class="collection-upload-copy">
+            (click)="!collection.image_url && openCollectionImageSelector()">
+            <div class="collection-upload-copy" *ngIf="!collection.image_url">
                 <div class="text-primary font-lg font-500">Upload Banner</div>
                 <div class="text-muted">1300px X 200px</div>
             </div>
+            <button type="button" class="collection-banner-upload-btn" *ngIf="collection.image_url"
+                tooltip="Upload Banner" container="body"
+                (click)="openCollectionImageSelector(); $event.stopPropagation()">
+                <i class="fas fa-pencil-alt"></i>
+            </button>
         </div>
 
-        <div class="collection-dashboard-grid">
-            <div class="collection-dashboard-card" *ngFor="let dashboard of selectedDashboards"
-                [class.has-image]="dashboard.image_url"
-                [ngStyle]="dashboard.image_url ? {'background-image': 'linear-gradient(rgba(55, 138, 216, 0.18), rgba(55, 138, 216, 0.78)), url(' + dashboard.image_url + ')'} : null">
-                <button type="button" class="collection-dashboard-upload-btn" tooltip="Upload Thumbnail"
-                    container="body"
-                    (click)="openDashboardImageModal(dashboard); $event.stopPropagation()">
-                    <i class="fas fa-pencil-alt"></i>
-                </button>
-                <div class="collection-dashboard-card-overlay">
-                    <span>{{ dashboard.name }}</span>
+        <div class="row collection-dashboard-grid">
+            <div class="col-12 col-sm-6 col-lg-3 collection-dashboard-col"
+                *ngFor="let dashboard of selectedDashboards">
+                <div class="collection-dashboard-card" [class.has-image]="dashboard.image_url"
+                    [ngStyle]="dashboard.image_url ? {'background-image': 'linear-gradient(rgba(55, 138, 216, 0.18), rgba(55, 138, 216, 0.78)), url(' + dashboard.image_url + ')'} : null">
+                    <button type="button" class="collection-dashboard-upload-btn" tooltip="Upload Thumbnail"
+                        container="body"
+                        (click)="openDashboardImageModal(dashboard); $event.stopPropagation()">
+                        <i class="fas fa-pencil-alt"></i>
+                    </button>
+                    <div class="collection-dashboard-card-overlay">
+                        <span>{{ dashboard.name }}</span>
+                    </div>
                 </div>
             </div>
 
-            <button type="button"
-                class="collection-select-dashboard-card d-flex justify-content-center align-items-center"
-                (click)="openDashboardModal()">
-                Select Dashboard
-            </button>
+            <div class="col-12 col-sm-6 col-lg-3 collection-dashboard-col">
+                <button type="button"
+                    class="collection-select-dashboard-card d-flex justify-content-center align-items-center"
+                    (click)="openDashboardModal()">
+                    Select Dashboard
+                </button>
+            </div>
         </div>
     </ng-container>
 </div>
@@ -179,7 +184,9 @@
 <ng-template #dashboardImageRef>
     <div class="card mb-0 collection-edit-dashboard-modal">
         <div class="card-header bg-transparent d-flex justify-content-between align-items-center">
-            <span class="font-lg">Edit Dashboard</span>
+            <span class="font-lg">
+                {{ selectedDashboard?.image_url ? 'Edit' : 'Add' }} Dashboard Thumbnail / Image
+            </span>
             <button type="button" class="btn btn-link text-dark p-0" (click)="modalRef.hide()">
                 <i class="fa fa-times font-lg"></i>
             </button>
@@ -192,7 +199,7 @@
             </div>
 
             <div class="form-group mb-0">
-                <label>Thumbnail <span class="text-muted ml-1">1300px X 200px</span></label>
+                <label>Thumbnail <span class="text-muted ml-1">Best Fit - 1300px X 200px</span></label>
                 <input id="dashboard-thumbnail-input" type="file" class="collection-file-input" accept="image/*"
                     #dashboardImageInput
                     (change)="onDashboardImageSelected($event)">

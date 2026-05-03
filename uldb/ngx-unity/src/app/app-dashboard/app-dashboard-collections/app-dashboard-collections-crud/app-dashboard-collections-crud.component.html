@@ -10,9 +10,6 @@
 
     <!-- Body -->
     <div class="card-body">
-        <div class="d-flex justify-content-center py-4" *ngIf="!form">
-            <app-spinner [name]="'main'" [width]="0"></app-spinner>
-        </div>
         <form class="ccc-form" *ngIf="form" [formGroup]="form" novalidate>
             <div class="form-group mb-1" *ngIf="nonFieldErr">
                 <div class="invalid-credentials">{{nonFieldErr}}</div>

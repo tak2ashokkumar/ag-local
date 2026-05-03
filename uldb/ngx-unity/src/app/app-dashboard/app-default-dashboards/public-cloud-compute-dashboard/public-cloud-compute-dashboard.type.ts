@@ -300,7 +300,7 @@ export interface PublicCloudTicketsResponse {
 
 export interface PublicCloudTicketFilterCriteria {
   state: string;
-  tickets_for: string;
+  ticket_type: string;
   search: string;
   priority: string;
   dateRange: string;
