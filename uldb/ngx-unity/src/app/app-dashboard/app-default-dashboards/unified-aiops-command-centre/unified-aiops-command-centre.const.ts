@@ -11,16 +11,52 @@ import {
   UnifiedAiopsRemediationMetric,
   UnifiedAiopsStackItem,
   UnifiedAiopsTableRow,
-  UnifiedAiopsTicketRow
+  UnifiedAiopsTicketRow,
+  UnifiedAiopsTone
 } from './unified-aiops-command-centre.type';
 
 export const UNIFIED_AIOPS_ALL_SELECTED_VALUE = 'all';
+
+export const UNIFIED_AIOPS_EXECUTIVE_MONITORING_SUMMARY_ENDPOINT = '/customer/widgets/unified-aiops/executive-monitoring-summary/';
+export const UNIFIED_AIOPS_DISCOVERY_VS_MONITORING_ENDPOINT = '/customer/widgets/unified-aiops/discovery-vs-monitoring/';
+export const UNIFIED_AIOPS_ALERT_SEGREGATION_BY_TYPE_ENDPOINT = '/customer/widgets/unified-aiops/alert-segregation-by-type/';
+export const UNIFIED_AIOPS_BUSINESS_SERVICES_ENDPOINT = '/customer/widgets/unified-aiops/business-services/';
+export const UNIFIED_AIOPS_APPLICATION_SERVICES_ALERTS_ENDPOINT = '/customer/widgets/unified-aiops/application-services-alerts/';
+export const UNIFIED_AIOPS_GEO_DISTRIBUTION_GLOBAL_OPS_ENDPOINT = '/customer/widgets/unified-aiops/geo-distribution-global-ops/';
+export const UNIFIED_AIOPS_PRIVATE_CLOUD_INFRA_COVERAGE_ENDPOINT = '/customer/widgets/unified-aiops/private-cloud-infra-coverage/';
+export const UNIFIED_AIOPS_PUBLIC_CLOUD_INFRA_COVERAGE_ENDPOINT = '/customer/widgets/unified-aiops/public-cloud-infra-coverage/';
+export const UNIFIED_AIOPS_DATACENTER_GEOGRAPHY_ENDPOINT = '/customer/widgets/unified-aiops/datacenter-geography/';
+export const UNIFIED_AIOPS_DATACENTER_INFRA_ENDPOINT = '/customer/widgets/unified-aiops/datacenter-infra/';
+export const UNIFIED_AIOPS_CONTAINER_SUMMARY_ENDPOINT = '/customer/widgets/unified-aiops/container-summary/';
+export const UNIFIED_AIOPS_OBSERVABILITY_SUMMARY_ENDPOINT = '/customer/widgets/unified-aiops/observability-summary/';
+export const UNIFIED_AIOPS_APPLICATION_OVERVIEW_ENDPOINT = '/customer/widgets/unified-aiops/application-overview/';
+export const UNIFIED_AIOPS_SERVICES_OVERVIEW_ENDPOINT = '/customer/widgets/unified-aiops/services-overview/';
+export const UNIFIED_AIOPS_DATABASE_MONITORING_ENDPOINT = '/customer/widgets/unified-aiops/database-monitoring/';
+export const UNIFIED_AIOPS_OS_MONITORING_ENDPOINT = '/customer/widgets/unified-aiops/os-monitoring/';
+export const UNIFIED_AIOPS_INFRA_PLATFORM_PERFORMANCE_ENDPOINT = '/customer/widgets/unified-aiops/infra-platform-performance/';
+export const UNIFIED_AIOPS_ANALYTICS_HEALTH_CHARTS_ENDPOINT = '/customer/widgets/unified-aiops/analytics-health-charts/';
+export const UNIFIED_AIOPS_ALERTS_ENDPOINT = '/customer/widgets/unified-aiops/alerts/';
+export const UNIFIED_AIOPS_AUTO_REMEDIATION_SUMMARY_ENDPOINT = '/customer/widgets/unified-aiops/auto-remediation-summary/';
+export const UNIFIED_AIOPS_PRIVATE_CLOUD_FAST_ENDPOINT = '/customer/private_cloud_fast/';
+export const UNIFIED_AIOPS_PUBLIC_CLOUD_FAST_ENDPOINT = '/customer/public_cloud_fast/';
 
 export const UNIFIED_AIOPS_DATACENTER_OPTIONS: UnifiedAiopsFilterOption[] = [
   { value: UNIFIED_AIOPS_ALL_SELECTED_VALUE, label: 'All Selected' },
   { value: 'aerys-la1-colocloud', label: 'Aerys LA1 ColoCloud' },
   { value: 'new-york-dc', label: 'New York Datacenter' },
   { value: 'san-francisco-dc', label: 'San Francisco Datacenter' }
+];
+
+export const UNIFIED_AIOPS_EXECUTIVE_SUMMARY_METRIC_CONFIG: Array<{ label: string; tone?: UnifiedAiopsTone; keys: string[] }> = [
+  { label: 'Total Resources', tone: 'primary', keys: ['total_resources', 'totalResources', 'resources_total', 'resourcesTotal', 'resource_count', 'resourceCount', 'total'] },
+  { label: 'Devices Up', tone: 'success', keys: ['devices_up', 'devicesUp', 'device_up', 'deviceUp', 'up'] },
+  { label: 'Devices Down', tone: 'danger', keys: ['devices_down', 'devicesDown', 'device_down', 'deviceDown', 'down'] },
+  { label: 'Unknown', tone: 'muted', keys: ['unknown', 'unknown_devices', 'unknownDevices'] },
+  { label: 'Applications', tone: 'primary', keys: ['applications', 'application_count', 'applicationCount', 'apps'] },
+  { label: 'Databases', tone: 'primary', keys: ['databases', 'database_count', 'databaseCount', 'db'] },
+  { label: 'VM', tone: 'primary', keys: ['vm', 'vms', 'vm_count', 'vmCount', 'virtual_machines', 'virtualMachines'] },
+  { label: 'Orphaned Devices', keys: ['orphaned_devices', 'orphanedDevices', 'orphaned'] },
+  { label: 'Idle Devices', keys: ['idle_devices', 'idleDevices', 'idle'] }
 ];
 
 export const UNIFIED_AIOPS_SUMMARY_METRICS: UnifiedAiopsMetric[] = [
@@ -30,7 +66,9 @@ export const UNIFIED_AIOPS_SUMMARY_METRICS: UnifiedAiopsMetric[] = [
   { label: 'Unknown', value: '38', tone: 'muted' },
   { label: 'Applications', value: '142', tone: 'primary' },
   { label: 'Databases', value: '86', tone: 'primary' },
-  { label: 'VM', value: '480', tone: 'primary' }
+  { label: 'VM', value: '480', tone: 'primary' },
+  { label: 'Orphaned Devices', value: '78' },
+  { label: 'Idle Devices', value: '23' }
 ];
 
 export const UNIFIED_AIOPS_DISCOVERY_ITEMS: UnifiedAiopsStackItem[] = [
@@ -79,6 +117,45 @@ export const UNIFIED_AIOPS_EMPLOYEE_METRICS: UnifiedAiopsMetric[] = [
   { label: 'Healthy', value: '1,710', tone: 'success' },
   { label: 'Warnings', value: '84', tone: 'warning' },
   { label: 'Critical', value: '46', tone: 'danger' }
+];
+
+export const UNIFIED_AIOPS_EMPLOYEE_METRIC_CONFIG: Array<{ label: string; tone?: UnifiedAiopsTone; keys: string[] }> = [
+  { label: 'Total Endpoints', tone: 'primary', keys: ['total_endpoints', 'totalEndpoints', 'endpoints', 'endpoint_count', 'total_services', 'totalServices'] },
+  { label: 'Applications', tone: 'primary', keys: ['applications', 'total_applications', 'totalApplications', 'application_count', 'applicationCount'] },
+  { label: 'Healthy', tone: 'success', keys: ['healthy', 'total_healthy', 'totalHealthy', 'healthy_count', 'healthyCount'] },
+  { label: 'Warnings', tone: 'warning', keys: ['warnings', 'warning', 'total_warning', 'totalWarning', 'warning_count', 'warningCount'] },
+  { label: 'Critical', tone: 'danger', keys: ['critical', 'total_critical', 'totalCritical', 'critical_count', 'criticalCount'] }
+];
+
+export const UNIFIED_AIOPS_DATACENTER_INFRA_METRIC_CONFIG: Array<{ label: string; tone?: UnifiedAiopsTone; keys: string[] }> = [
+  { label: 'Compute', tone: 'primary', keys: ['compute', 'bare_metal', 'bareMetal', 'bare_metal_servers'] },
+  { label: 'Switches', tone: 'primary', keys: ['switch', 'switches'] },
+  { label: 'Firewalls', tone: 'primary', keys: ['firewall', 'firewalls'] },
+  { label: 'Load Balancer', tone: 'primary', keys: ['load_balancer', 'loadBalancer'] },
+  { label: 'Storage Units', tone: 'primary', keys: ['storage', 'storage_units', 'storageUnits'] },
+  { label: 'PDU/Power', tone: 'primary', keys: ['pdu_power', 'pduPower', 'power'] },
+  { label: 'URLs Monitored', tone: 'primary', keys: ['urls_monitored', 'urlsMonitored', 'url'] },
+  { label: 'MAC Devices', tone: 'primary', keys: ['mac_devices', 'macDevices'] }
+];
+
+export const UNIFIED_AIOPS_KUBERNETES_METRIC_CONFIG: Array<{ label: string; tone?: UnifiedAiopsTone; keys: string[] }> = [
+  { label: 'K8s Clusters', tone: 'primary', keys: ['kube_clusters', 'kubeClusters', 'k8s_clusters', 'k8sClusters'] },
+  { label: 'Nodes', tone: 'primary', keys: ['nodes'] },
+  { label: 'Namespaces', tone: 'primary', keys: ['namespaces'] },
+  { label: 'Pods Running', tone: 'primary', keys: ['running_pods', 'runningPods', 'pods_running', 'podsRunning'] },
+  { label: 'Docker Hosts', tone: 'primary', keys: ['docker_hosts', 'dockerHosts'] },
+  { label: 'Pod Restarts/Hr', tone: 'primary', keys: ['pod_restarts_hr', 'podRestartsHr', 'pod_restarts', 'podRestarts'] }
+];
+
+export const UNIFIED_AIOPS_AI_GPU_METRIC_CONFIG: Array<{ label: string; tone?: UnifiedAiopsTone; keys: string[]; suffix?: string; threshold?: 'utilization' | 'warning' }> = [
+  { label: 'GPU Hosts', tone: 'primary', keys: ['gpu_count', 'gpuCount', 'gpu_hosts', 'gpuHosts'] },
+  { label: 'GPU Utilization', keys: ['avg_gpu_utilization', 'avgGpuUtilization', 'gpu_utilization', 'gpuUtilization'], suffix: '%', threshold: 'utilization' },
+  { label: 'GPU Memory', keys: ['avg_gpu_memory', 'avgGpuMemory', 'gpu_memory', 'gpuMemory'], suffix: '%', threshold: 'warning' },
+  { label: 'Avg Thermal', tone: 'primary', keys: ['avg_gpu_temperature', 'avgGpuTemperature', 'avg_thermal', 'avgThermal'] },
+  { label: 'LLM Workloads', tone: 'primary', keys: ['llm_counts', 'llmCounts', 'llm_workloads', 'llmWorkloads'] },
+  { label: 'Inference Latency', tone: 'primary', keys: ['llm_latency', 'llmLatency', 'inference_latency', 'inferenceLatency'], suffix: 'ms' },
+  { label: 'Vector DBs', tone: 'primary', keys: ['vectordb_count', 'vectorDbCount', 'vector_db_count', 'vectorDb'] },
+  { label: 'VDB Query Lat.', tone: 'primary', keys: ['vector_db_latency', 'vectorDbLatency', 'vdb_query_latency', 'vdbQueryLatency'], suffix: 'ms' }
 ];
 
 export const UNIFIED_AIOPS_GEO_HEATMAP: UnifiedAiopsHeatmapGroup[] = [
@@ -232,7 +309,7 @@ export const UNIFIED_AIOPS_PUBLIC_CLOUD_COVERAGE: UnifiedAiopsCoverageCard[] = [
     ]
   },
   {
-    title: 'Oracle Clour',
+    title: 'Oracle Cloud',
     rows: [
       { label: 'Tenancies', value: '4' },
       { label: 'Compute Instances', value: '48' },

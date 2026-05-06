@@ -2,8 +2,8 @@ import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormGroup } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { EChartsOption } from 'echarts';
-import { Observable, Subject } from 'rxjs';
-import { finalize, takeUntil } from 'rxjs/operators';
+import { forkJoin, Observable, of, Subject } from 'rxjs';
+import { catchError, finalize, takeUntil } from 'rxjs/operators';
 import { AppSpinnerService } from 'src/app/shared/app-spinner/app-spinner.service';
 import { IMultiSelectSettings, IMultiSelectTexts } from 'src/app/shared/multiselect-dropdown/types';
 import { DatacenterService } from 'src/app/united-cloud/datacenter/datacenter.service';
@@ -11,6 +11,7 @@ import { UnifiedAiopsCommandCentreService } from './unified-aiops-command-centre
 import {
   UnifiedAiopsAlertRow,
   UnifiedAiopsBusinessService,
+  UnifiedAiopsCloudFilterOption,
   UnifiedAiopsCoverageCard,
   UnifiedAiopsDashboardFilterCriteria,
   UnifiedAiopsFilterOption,
@@ -33,6 +34,7 @@ export class UnifiedAiopsCommandCentreComponent implements OnInit, OnDestroy {
 
   filterForm: FormGroup;
   datacenterOptions: UnifiedAiopsFilterOption[] = [];
+  cloudOptions: UnifiedAiopsCloudFilterOption[] = [];
 
   summaryMetrics: UnifiedAiopsMetric[] = [];
   discoveryOptions: EChartsOption = {};
@@ -43,6 +45,8 @@ export class UnifiedAiopsCommandCentreComponent implements OnInit, OnDestroy {
   geoHeatmapOptions: EChartsOption = {};
   privateCloudCoverage: UnifiedAiopsCoverageCard[] = [];
   publicCloudCoverage: UnifiedAiopsCoverageCard[] = [];
+  privateCloudCoverageTotal = '0';
+  publicCloudCoverageTotal = '0';
   datacenterInfrastructureMetrics: UnifiedAiopsMetric[] = [];
   kubernetesMetrics: UnifiedAiopsMetric[] = [];
   aiGpuMetrics: UnifiedAiopsMetric[] = [];
@@ -165,13 +169,18 @@ export class UnifiedAiopsCommandCentreComponent implements OnInit, OnDestroy {
   loadFilterOptionsAndDashboard() {
     this.resetFilterState();
     this.spinnerService.start(this.loaderNames.filters);
-    this.svc.getDatacenters().pipe(takeUntil(this.ngUnsubscribe)).subscribe(res => {
-      this.datacenterOptions = res || [];
+    forkJoin({
+      datacenters: this.svc.getDatacenters().pipe(catchError(() => of(this.svc.getFallbackDatacenters()))),
+      clouds: this.svc.getClouds().pipe(catchError(() => of([])))
+    }).pipe(takeUntil(this.ngUnsubscribe)).subscribe(res => {
+      this.datacenterOptions = res.datacenters || [];
+      this.cloudOptions = res.clouds || [];
       this.buildFilterForm();
       this.stopFilterLoader();
       this.loadData();
     }, () => {
       this.datacenterOptions = this.svc.getFallbackDatacenters();
+      this.cloudOptions = [];
       this.buildFilterForm();
       this.stopFilterLoader();
       this.loadData();
@@ -180,13 +189,14 @@ export class UnifiedAiopsCommandCentreComponent implements OnInit, OnDestroy {
 
   /** Creates the filter form with all currently loaded datacenter options selected by default. */
   private buildFilterForm() {
-    this.filterForm = this.svc.buildFilterForm(this.datacenterOptions);
+    this.filterForm = this.svc.buildFilterForm(this.datacenterOptions, this.cloudOptions);
   }
 
   /** Clears existing filter form/options so a fresh filter loading sequence can run. */
   private resetFilterState() {
     this.filterForm = null;
     this.datacenterOptions = [];
+    this.cloudOptions = [];
   }
 
   /** Reads selected option values from a filter form control. */
@@ -205,13 +215,14 @@ export class UnifiedAiopsCommandCentreComponent implements OnInit, OnDestroy {
   /** Returns the normalized filter form output passed to all dashboard service calls. */
   private getFilterFormOutput(): UnifiedAiopsDashboardFilterCriteria {
     return {
-      datacenters: this.getSelectedValues('datacenters')
+      datacenters: this.getSelectedValues('datacenters'),
+      clouds: this.getSelectedValues('clouds')
     };
   }
 
   /** Confirms the filter form exists and has loaded option data before widget APIs are called. */
   private hasFilterFormData(): boolean {
-    return !!this.filterForm && !!this.datacenterOptions.length;
+    return !!this.filterForm;
   }
 
   /** Stops the top filter loader in the next tick so synchronous static responses still render the loader correctly. */
@@ -224,7 +235,9 @@ export class UnifiedAiopsCommandCentreComponent implements OnInit, OnDestroy {
     if (!this.filterForm) {
       return 'Loading filters';
     }
-    return this.getSelectedLabel(this.datacenterOptions, this.getSelectedValues('datacenters'), 'All datacenters', 'datacenters', 'No datacenters');
+    const datacenterScope = this.getSelectedLabel(this.datacenterOptions, this.getSelectedValues('datacenters'), 'All datacenters', 'datacenters', 'No datacenters');
+    const cloudScope = this.getSelectedLabel(this.cloudOptions, this.getSelectedValues('clouds'), 'All clouds', 'clouds', 'No clouds');
+    return `${datacenterScope} | ${cloudScope}`;
   }
 
   /** Converts selected values into a compact filter label for the header scope text. */
@@ -251,7 +264,8 @@ export class UnifiedAiopsCommandCentreComponent implements OnInit, OnDestroy {
       this.getSummaryMetrics(filterFormOutput);
       this.getDiscoveryOptions(filterFormOutput);
       this.getAlertSegregation(filterFormOutput);
-      this.getBusinessServices(filterFormOutput);
+      // Backlog widgets for the next sprint. Uncomment these calls with their HTML blocks when implementation resumes.
+      // this.getBusinessServices(filterFormOutput);
       this.getEmployeeMetrics(filterFormOutput);
       this.getGeoDistribution(filterFormOutput);
       this.getPrivateCloudCoverage(filterFormOutput);
@@ -259,21 +273,21 @@ export class UnifiedAiopsCommandCentreComponent implements OnInit, OnDestroy {
       this.getDatacenterInfrastructure(filterFormOutput);
       this.getKubernetesMetrics(filterFormOutput);
       this.getAiGpuMetrics(filterFormOutput);
-      this.getApplicationRows(filterFormOutput);
-      this.getServiceRows(filterFormOutput);
+      // this.getApplicationRows(filterFormOutput);
+      // this.getServiceRows(filterFormOutput);
       this.getDatabaseRows(filterFormOutput);
       this.getOsRows(filterFormOutput);
-      this.getBandwidthBar(filterFormOutput);
-      this.getBandwidthLine(filterFormOutput);
-      this.getPlatformPerformance(filterFormOutput);
-      this.getPerformanceMetrics(filterFormOutput);
+      // this.getBandwidthBar(filterFormOutput);
+      // this.getBandwidthLine(filterFormOutput);
+      // this.getPlatformPerformance(filterFormOutput);
+      // this.getPerformanceMetrics(filterFormOutput);
       this.getDeviceAvailability(filterFormOutput);
       this.getAvailabilityCategory(filterFormOutput);
       this.getAlertTrend(filterFormOutput);
-      this.getAlertReductionMetrics(filterFormOutput);
-      this.getAlertResponseMetrics(filterFormOutput);
-      this.getAlertSourceSankey(filterFormOutput);
-      this.getAlertLifecycleSankey(filterFormOutput);
+      // this.getAlertReductionMetrics(filterFormOutput);
+      // this.getAlertResponseMetrics(filterFormOutput);
+      // this.getAlertSourceSankey(filterFormOutput);
+      // this.getAlertLifecycleSankey(filterFormOutput);
       this.getCriticalAlerts(filterFormOutput);
       this.getTicketPriority(filterFormOutput);
       this.getTicketStatus(filterFormOutput);
@@ -347,19 +361,25 @@ export class UnifiedAiopsCommandCentreComponent implements OnInit, OnDestroy {
 
   getPrivateCloudCoverage(filterFormOutput: UnifiedAiopsDashboardFilterCriteria) {
     this.privateCloudCoverage = [];
+    this.privateCloudCoverageTotal = '0';
     this.loadWidget(this.loaderNames.privateCloudCoverage, this.svc.getPrivateCloudCoverage(filterFormOutput), res => {
       this.privateCloudCoverage = this.svc.convertToCoverageCardsViewData(res);
+      this.privateCloudCoverageTotal = this.svc.getCoverageResourceTotal(this.privateCloudCoverage);
     }, () => {
       this.privateCloudCoverage = [];
+      this.privateCloudCoverageTotal = '0';
     });
   }
 
   getPublicCloudCoverage(filterFormOutput: UnifiedAiopsDashboardFilterCriteria) {
     this.publicCloudCoverage = [];
+    this.publicCloudCoverageTotal = '0';
     this.loadWidget(this.loaderNames.publicCloudCoverage, this.svc.getPublicCloudCoverage(filterFormOutput), res => {
       this.publicCloudCoverage = this.svc.convertToCoverageCardsViewData(res);
+      this.publicCloudCoverageTotal = this.svc.getCoverageResourceTotal(this.publicCloudCoverage);
     }, () => {
       this.publicCloudCoverage = [];
+      this.publicCloudCoverageTotal = '0';
     });
   }
 

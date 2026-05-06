@@ -34,26 +34,29 @@ export class AppDefaultDashboardsService {
   }
 
   getDefaultDashboardRouteSegment(name: string) {
-    switch (name) {
-      case 'Infrastructure Overview':
+    switch ((name || '').trim().toLowerCase()) {
+      case 'infrastructure overview':
         return 'infrastructure';
-      case 'Network Overview':
+      case 'network overview':
         return 'network-devices';
-      case 'IoT Device Overview':
+      case 'iot device overview':
         return 'iot-devices';
-      case 'Cloud Cost Overview':
+      case 'cloud cost overview':
         return 'cloud-cost';
-      case 'Task and Workflow Overview':
+      case 'task and workflow overview':
         return 'orchestration';
-      case 'Application Dashboard':
+      case 'application dashboard':
         return 'application';
-      case 'Private Cloud Compute Dashboard':
+      case 'private cloud compute dashboard':
         return 'private-cloud-compute';
-      case 'Public Cloud Compute Dashboard':
+      case 'public cloud compute dashboard':
         return 'public-cloud-compute';
-      case 'Database Dashboard':
+      case 'database dashboard':
         return 'database';
-      case 'Unified AIOps Command Center':
+      case 'unified aiops command center':
+      case 'unified aiops command center dashboard':
+      case 'unified aiops command centre':
+      case 'unified aiops command centre dashboard':
         return 'unified-aiops-command-centre';
     }
   }

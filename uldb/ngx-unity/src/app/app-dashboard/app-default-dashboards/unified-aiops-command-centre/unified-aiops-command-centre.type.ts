@@ -5,8 +5,13 @@ export interface UnifiedAiopsFilterOption {
   label: string;
 }
 
+export interface UnifiedAiopsCloudFilterOption extends UnifiedAiopsFilterOption {
+  category: 'private' | 'public';
+}
+
 export interface UnifiedAiopsDashboardFilterCriteria {
   datacenters: string[];
+  clouds: string[];
 }
 
 export interface UnifiedAiopsMetric {
@@ -68,6 +73,7 @@ export interface UnifiedAiopsBusinessService {
 export interface UnifiedAiopsCoverageCard {
   title: string;
   rows: UnifiedAiopsCoverageRow[];
+  totalResources?: string;
 }
 
 export interface UnifiedAiopsCoverageRow {
