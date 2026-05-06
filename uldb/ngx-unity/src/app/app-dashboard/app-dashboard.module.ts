@@ -79,7 +79,7 @@ export const MY_NATIVE_FORMATS = {
     UnifiedAiopsCommandCentreComponent,
     AppDashboardCollectionsComponent,
     AppDashboardCollectionsCrudComponent,
-    AppDashboardCollectionsViewComponent,
+    AppDashboardCollectionsViewComponent
   ],
   imports: [
     AppCoreModule,

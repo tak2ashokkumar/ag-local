@@ -40,17 +40,16 @@ export class AppDashboardCollectionsViewService {
   }
 
   updateCollectionImage(uuid: string, file: File): Observable<CollectionDetailResponse> {
+    if (!file) return;
     const formData = new FormData();
     formData.append('image', file, file.name);
     return this.http.patch<CollectionDetailResponse>(`${this.collectionEndpoint}${uuid}/`, formData);
   }
 
   updateDashboardImage(dashboard: DashboardItem, name: string, file?: File | null): Observable<any> {
+    if (!file) return;
     const formData = new FormData();
-    formData.append('name', name);
-    if (file) {
-      formData.append('image', file, file.name);
-    }
+    formData.append('image', file, file.name);
     return this.http.patch(`/customer/dashboards/${dashboard.uuid}/`, formData);
   }
 

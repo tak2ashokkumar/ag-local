@@ -48,8 +48,7 @@
                     <div class="widget-title">Cloud Type Distribution</div>
                     <div echarts [options]="cloudTypeDistributionOptions" class="cloud-type-chart"></div>
                     <div class="cloud-type-legend">
-                        <span class="legend-item"
-                            *ngFor="let item of cloudTypeDistribution; trackBy: trackByIndex">
+                        <span class="legend-item" *ngFor="let item of cloudTypeDistribution; trackBy: trackByIndex">
                             <span class="legend-dot" [style.background]="item.color"></span>
                             {{item.name}} {{item.value}}%
                         </span>
@@ -299,8 +298,7 @@
             <app-spinner [name]="loaderNames.alertSummary" [width]="0"></app-spinner>
             <app-spinner [name]="loaderNames.criticalAlerts" [width]="0"></app-spinner>
             <div class="alert-summary">
-                <div class="alert-summary-metric"
-                    *ngFor="let metric of alertSummaryMetrics; trackBy: trackByIndex">
+                <div class="alert-summary-metric" *ngFor="let metric of alertSummaryMetrics; trackBy: trackByIndex">
                     <div>{{metric.label}}</div>
                     <strong [ngClass]="getStatusClass(metric.tone)">{{metric.value}}</strong>
                 </div>
